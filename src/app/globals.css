@@ -1,0 +1,31 @@
+/* src/styles/globals.css */
+/* @import url('https://fonts.googleapis.com/css2?family=Fleur+De+Leah&family=Lavishly+Yours&family=Merienda:wght@300..900&family=Miss+Fajardose&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary: #e6bdbb;
+  --textprimary: #EEE0C9;
+  --darkprimary:#914744;
+  --primarylight: #f7eae9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
