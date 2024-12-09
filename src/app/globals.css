@@ -8,6 +8,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -24,6 +26,9 @@
   }
 }
 
+html {
+  scroll-behavior: smooth; /* Membuat scrolling lebih halus */
+}
 body {
   color: var(--foreground);
   background: var(--background);

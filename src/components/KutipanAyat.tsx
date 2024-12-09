@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import ScrollReveal from "./ScrollReveal";
 
 interface KutipanAyatProps {
   title?: string; // Props opsional untuk mengganti judul
@@ -39,17 +40,24 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
       </div>
 
       <h2 className="text-5xl font-semibold font-lavishly mb-8 mt-6 text-darkprimary relative z-10 flex items-center justify-center space-x-1">
+        <ScrollReveal>
           <span className="relative -top-4">M</span>
+        </ScrollReveal>
+        <ScrollReveal>
           <span className="text-center">&</span>
+        </ScrollReveal>
+        <ScrollReveal>
           <span className="relative top-4">A</span>
+        </ScrollReveal>
       </h2>
-
+      <ScrollReveal>
       <p className="text-lg font-merienda text-darkprimary mb-4 relative z-10">
         {quote}
       </p>
       <p className="text-sm text-darkprimary font-medium relative z-10">
         {source}
       </p>
+      </ScrollReveal>
     </div>
   );
 };

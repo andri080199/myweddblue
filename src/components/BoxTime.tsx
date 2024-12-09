@@ -9,7 +9,7 @@ const BoxTime: React.FC<BoxTimeProps> = () => {
   const targetDate = new Date("2024-12-31T00:00:00").getTime();
 
   return (
-    <div className="w-full mx-6 px-4 mb-12 py-4 relative rounded-tr-3xl text-primary">
+    <div className="w-full mx-6 px-4 mb-12 py-4 relative rounded-tr-3xl text-darkprimary">
   {/* Elemen latar belakang dengan efek opacity */}
   <div className="absolute inset-0 rounded-3xl"></div>
   

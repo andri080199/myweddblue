@@ -2,14 +2,19 @@ import React from 'react';
 import AkadNikah from './AkadNikah';
 import Resepsi from './Resepsi';
 import Image from 'next/image';
+import ScrollReveal from './ScrollReveal';
 
 // Komponen WeddingEvent dengan TypeScript
 const WeddingEvent: React.FC = () => {
   return (
     <div className="relative w-full h-full pt-36 pb-12 bg-gradient-to-tr from-primary to-primarylight">
       <div className='absolute inset-0 top-10'>
+        <ScrollReveal>
         <h1 className='text-center font-fleur text-darkprimary text-5xl'>Wedding</h1>
+        </ScrollReveal>
+        <ScrollReveal>
         <h1 className='absolute left-1/2 text-center font-fleur text-darkprimary text-5xl'>Event</h1>
+        </ScrollReveal>
       </div>
       <div className='absolute inset-0 overflow-hidden'>
       <Image

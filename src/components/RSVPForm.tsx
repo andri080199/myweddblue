@@ -1,6 +1,7 @@
 'use client';
 import { useState } from "react";
 import Image from "next/image";
+import ScrollReveal from "./ScrollReveal";
 
 const RSVPForm: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -37,7 +38,7 @@ const RSVPForm: React.FC = () => {
 
   return (
     <div className="relative bg-darkprimary flex items-center justify-center h-full py-8 px-6 overflow-hidden">
-       <div className=''>
+       <div className='z-10'>
       <Image
         src={"/images/PojokKananBunga.png"}
         alt="Chip"
@@ -54,7 +55,9 @@ const RSVPForm: React.FC = () => {
         className="absolute -top-16 -left-12 z-0 animate-tiltLeft" 
         />
       </div>
-    <div className="w-max mx-auto p-6 px-10 bg-primarylight shadow-md rounded-2xl">
+      <ScrollReveal>
+
+    <div className="w-full mx-auto p-6 px-10 bg-primarylight shadow-md rounded-2xl">
       <h2 className="text-2xl font-semibold mb-2 text-center text-darkprimary font-lavishly">Wedding RSVP</h2>
       <h1 className="text-sm font-merienda mb-4 text-center text-darkprimary">bantu kami untuk mempersiapkan segalanya lebih baik dengan mengisi form kehadiran dibawah ini.</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -67,7 +70,7 @@ const RSVPForm: React.FC = () => {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full mt-1 p-2 border border-primary rounded-lg focus:outline-1 focus:outline-darkprimary focus:ring-primary focus:border-primary text-darkprimary"
+            className="w-full mt-1 p-2 border border-darkprimary rounded-lg focus:outline-1 focus:outline-darkprimary focus:ring-primary focus:border-primary text-darkprimary"
             placeholder="Masukkan Nama Kamu"
           />
         </div>
@@ -114,6 +117,7 @@ const RSVPForm: React.FC = () => {
         </p>
       )}
     </div>
+      </ScrollReveal>
     </div>
   );
 };

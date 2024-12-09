@@ -18,7 +18,7 @@ const DanaCard: React.FC = () => {
   };
 
   return (
-    <div className="w-80 h-52 px-6 pt-8 bg-primary rounded-xl shadow-lg text-white items-center mx-auto"
+    <div className="w-72 h-52 px-6 pt-8 bg-primary rounded-xl shadow-lg text-white items-center mx-auto"
     style={{
       backgroundImage: "url('/images/bgcard.jpg')", // URL gambar di folder public
     }}>
@@ -38,7 +38,7 @@ const DanaCard: React.FC = () => {
       </div>
 
       {/* Nomor Rekening */}
-      <div className="mb-2 pt-8 ml-6">
+      <div className="mb-2 pt-8 ml-2">
         {/* <p className="text-sm font-semibold text-darkprimary">Nomor Rekening:</p> */}
         <p className="text-lg font-bold text-darkprimary font-mono text-left tracking-wider">{rekening}</p>
       </div>

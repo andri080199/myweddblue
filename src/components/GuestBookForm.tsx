@@ -1,6 +1,7 @@
 'use client';
 // GuestBookForm.tsx
 import React, { useState } from "react";
+import ScrollReveal from "./ScrollReveal";
 
 interface GuestBookFormProps {
   onNewEntry: (entry: { name: string; message: string; timestamp: string }) => void;
@@ -63,6 +64,7 @@ const GuestBookForm: React.FC<GuestBookFormProps> = ({ onNewEntry }) => {
   };
 
   return (
+    <ScrollReveal>
     <div className="mx-auto bg-primarylight shadow-lg rounded-2xl p-6">
       <h2 className="text-2xl font-bold mb-4 text-darkprimary font-lavishly text-center">Pray & Wish</h2>
       <h1 className="text-sm font-merienda mb-4 text-center text-darkprimary">Beri Ucapan dan Doa kepada kami yang sedang berbahagia.</h1>
@@ -110,6 +112,7 @@ const GuestBookForm: React.FC<GuestBookFormProps> = ({ onNewEntry }) => {
         )}
       </form>
     </div>
+    </ScrollReveal>
   );
 };
 

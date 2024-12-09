@@ -1,11 +1,14 @@
 import React from 'react';
 import Gallery from './Gallery';
 import Image from 'next/image';
+import ScrollReveal from './ScrollReveal';
 
 const OurGallery: React.FC = () => {
     return (
-        <div className='relative'>
-            <h1 className='text-center font-fleur text-5xl py-8 text-darkprimary bg-primary'>Our Gallery</h1>
+        <div className='relative bg-primary'>
+          <ScrollReveal>
+            <h1 className='text-center font-fleur text-5xl py-8 text-darkprimary'>Our Gallery</h1>
+          </ScrollReveal>
             <div className='absolute inset-0 overflow-hidden'>
       <Image
         src={"/images/PojokKananBunga.png"}

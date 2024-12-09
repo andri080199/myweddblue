@@ -1,4 +1,5 @@
 import React from 'react';
+import ScrollReveal from './ScrollReveal';
 
 const AkadNikah: React.FC = () => {
   return (
@@ -11,14 +12,22 @@ const AkadNikah: React.FC = () => {
 
         {/* Sisi Kanan */}
         <div className="w-full bg-blue-50 flex-row p-4 py-6 text-darkprimary">
+          <ScrollReveal>
           <h1 className="text-lg font-merienda">Minggu, 28 April 2024</h1>
+          </ScrollReveal>
+          <ScrollReveal>
           <p className="text-sm font-mono">Pukul 08.00 s.d 10.00 WIB</p>
+          </ScrollReveal>
           <hr className="border-t-2 border-darkprimary my-3" />
+          <ScrollReveal>
           <h1 className="text-lg font-merienda font-bold">Lokasi</h1>
+          </ScrollReveal>
+          <ScrollReveal>   
           <p className='text-sm font-mono'>Golden Tulip Essential Tangerang
             Jl. Jend. Sudirman Kav. 9 Cikokol
             Sukasari, Tangerang, Banten
           </p>
+          </ScrollReveal>
         </div>
       </div>
     </div>

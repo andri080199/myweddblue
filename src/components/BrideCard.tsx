@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image"; // Impor Image dari Next.js
+import ScrollReveal from "./ScrollReveal";
 
 const BrideCard: React.FC = () => {
   return (
@@ -27,10 +28,12 @@ const BrideCard: React.FC = () => {
       <div className="w-60 bg-darkprimary text-left py-2 pl-2">
         <h3 className="text-2xl text-primarylight font-semibold font-merienda">THE BRIDE</h3>
       </div>
+      <ScrollReveal>
       <div className="text-left mt-2 text-darkprimary">
         <h1 className="font-merienda text-2xl">Mita Anggraini Safitri</h1>
         <h1 className="font-merienda mr-20">Putri Pertama dari Bapak Yusuf Ali dan Ibu Nurbaya</h1>
       </div>
+      </ScrollReveal>
     </div>
   );
 };

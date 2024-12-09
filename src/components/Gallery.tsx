@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ScrollReveal from "./ScrollReveal";
 
 const images = [
   { src: "/images/WeddingBG.jpg", alt: "Photo 1", size: "col-span-2 row-span-2" },
@@ -15,6 +16,7 @@ const images = [
 
 const Gallery: React.FC = () => {
   return (
+    <ScrollReveal>
     <div className="container mx-auto p-2 bg-primary">
       <div className="grid grid-cols-3 gap-1 md:grid-cols-4">
         {images.map((image, index) => (
@@ -33,6 +35,7 @@ const Gallery: React.FC = () => {
         ))}
       </div>
     </div>
+    </ScrollReveal>
   );
 };
 

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from "react";
 import GuestBookForm from "./GuestBookForm";
+import ScrollReveal from "./ScrollReveal";
 
 interface GuestEntry {
   name: string;
@@ -48,10 +49,15 @@ const GuestBookList = () => {
   return (
     <div className="space-y-4 p-4 pb-20 bg-darkprimary px-6">
       <GuestBookForm onNewEntry={handleNewEntry} />
+      <ScrollReveal>
+        
+      
       <h2 className="text-4xl font-semibold text-center text-primarylight font-lavishly pt">Ucapan Doa</h2>
+      </ScrollReveal>
       {entries.length === 0 ? (
         <p className="text-center text-gray-500">Belum ada ucapan doa.</p>
       ) : (
+        <ScrollReveal>
         <ul className="space-y-4 overflow-y-auto h-96 w-full border-4 border-primary rounded-xl p-2">
           {entries.map((entry, index) => (
             <li
@@ -70,6 +76,7 @@ const GuestBookList = () => {
             </li>
           ))}
         </ul>
+        </ScrollReveal>
       )}
     </div>
   );
