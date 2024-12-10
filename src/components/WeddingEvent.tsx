@@ -8,15 +8,26 @@ import ScrollReveal from './ScrollReveal';
 const WeddingEvent: React.FC = () => {
   return (
     <div className="relative w-full h-full pt-36 pb-12 bg-gradient-to-tr from-primary to-primarylight">
-      <div className='absolute inset-0 top-10'>
+      <div className='absolute inset-0 top-10 z-20'>
         <ScrollReveal>
-        <h1 className='text-center font-fleur text-darkprimary text-5xl'>Wedding</h1>
+        <h1 className='text-center font-fleur text-gold text-5xl font-bold'>Wedding</h1>
         </ScrollReveal>
         <ScrollReveal>
-        <h1 className='absolute left-1/2 text-center font-fleur text-darkprimary text-5xl'>Event</h1>
+        <h1 className='absolute left-1/2 text-center font-fleur text-gold text-5xl font-bold'>Event</h1>
         </ScrollReveal>
       </div>
-      <div className='absolute inset-0 overflow-hidden'>
+       <div>
+     <Image
+        src={"/images/PohonPutih.jpg"}
+        alt="Chip"
+        layout="fill" // Mengisi kontainer
+        objectFit="cover"
+        quality={100}
+        className="relative-full z-0 saturate-0"
+      />
+      <div className="absolute inset-0 bg-primarylight opacity-60"></div>
+     </div>
+      {/* <div className='absolute inset-0 overflow-hidden'>
       <Image
         src={"/images/PojokKananBunga.png"}
         alt="Chip"
@@ -33,14 +44,14 @@ const WeddingEvent: React.FC = () => {
         className="absolute -top-16 -left-12 z-0 animate-tiltLeft" 
         />
 
-      {/* <Image
+      <Image
         src={"/images/bungaBottom.png"}
         alt="Chip"
         width={600}
         height={350}
         className="absolute -bottom-6 z-0 animate-bounceUp" // Membalik secara horizontal
-        /> */}
-      </div>
+        />
+      </div> */}
       <AkadNikah />
       <Resepsi />
     </div>

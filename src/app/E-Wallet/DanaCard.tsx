@@ -40,7 +40,7 @@ const DanaCard: React.FC = () => {
       {/* Nomor Rekening */}
       <div className="mb-2 pt-8 ml-2">
         {/* <p className="text-sm font-semibold text-darkprimary">Nomor Rekening:</p> */}
-        <p className="text-lg font-bold text-darkprimary font-mono text-left tracking-wider">{rekening}</p>
+        <p className="text-lg font-bold text-gold font-mono text-left tracking-wider">{rekening}</p>
       </div>
 
       {/* Tombol Salin Nomor Rekening */}

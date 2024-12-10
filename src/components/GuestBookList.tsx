@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import GuestBookForm from "./GuestBookForm";
 import ScrollReveal from "./ScrollReveal";
+import Image from "next/image";
 
 interface GuestEntry {
   name: string;
@@ -47,35 +48,48 @@ const GuestBookList = () => {
   }
 
   return (
-    <div className="space-y-4 p-4 pb-20 bg-darkprimary px-6">
+    <div className="relative space-y-4 p-4 pb-20 px-6">
+      {/* Background Image */}
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/images/PohonPutih.jpg" // Ganti dengan path gambar Anda
+          alt="Background"
+          layout="fill"
+          objectFit="cover"
+          quality={100}
+        />
+        {/* Overlay untuk memastikan teks terbaca */}
+        <div className="absolute inset-0 bg-white/50"></div>
+      </div>
+
       <GuestBookForm onNewEntry={handleNewEntry} />
       <ScrollReveal>
-        
-      
-      <h2 className="text-4xl font-semibold text-center text-primarylight font-lavishly pt">Ucapan Doa</h2>
+        <h2 className="text-5xl text-center text-gold font-bold font-lavishly">
+          Ucapan Doa
+        </h2>
       </ScrollReveal>
       {entries.length === 0 ? (
         <p className="text-center text-gray-500">Belum ada ucapan doa.</p>
       ) : (
         <ScrollReveal>
-        <ul className="space-y-4 overflow-y-auto h-96 w-full border-4 border-primary rounded-xl p-2">
-          {entries.map((entry, index) => (
-            <li
-              key={index}
-              className="shadow-md rounded-xl shadow-primarylight p-4 bg-primarylight"
-            >
-              <p className="font-bold text-darkprimary font-poppins">
-                <span className="font-bold"></span> {entry.name}
-              </p>
-              <p className="text-darkprimary font-thin font-merienda mt-1">
-                <span className="font-bold"></span> {entry.message}
-              </p>
-              <p className="text-sm text-darkprimary mt-2">
-                Dikirim pada: {new Date(entry.timestamp).toLocaleString()}
-              </p>
-            </li>
-          ))}
-        </ul>
+          <ul className="space-y-4 overflow-y-auto h-96 w-full border-4 border-darkprimary rounded-xl p-2">
+            {entries.map((entry, index) => (
+              <li
+                key={index}
+                className="shadow-md rounded-xl p-4 bg-primarylight border-2 border-darkprimary shadow-darkprimary"
+              >
+                <p className="font-bold text-textprimary font-poppins">
+                  <span className="font-bold"></span> {entry.name}
+                </p>
+                <p className="text-textprimary font-thin font-merienda mt-1">
+                  <span className="font-bold"></span> {entry.message}
+                </p>
+                <p className="text-sm text-textprimary mt-2">
+                  Dikirim pada: {new Date(entry.timestamp).toLocaleString()}
+                </p>
+              </li>
+            ))}
+          </ul>
         </ScrollReveal>
       )}
     </div>

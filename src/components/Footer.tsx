@@ -20,27 +20,22 @@ const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="relative bg-primarylight text-darkprimary py-4 text-center overflow-hidden h-screen">
+    <footer className="relative bg-primarylight text-textprimary py-4 text-center overflow-hidden h-screen">
       <div>
-        <Image
-          src={"/images/PojokKananBunga.png"}
-          alt="Chip"
-          width={170}
-          height={170}
-          className="absolute -top-16 -right-12 z-0 animate-tiltRight"
-        />
-        <Image
-          src={"/images/PojokKiriBunga.png"}
-          alt="Chip"
-          width={170}
-          height={170}
-          className="absolute -top-16 -left-12 z-0 animate-tiltLeft"
-        />
-      </div>
+     <Image
+        src={"/images/BangkuSalju.jpg"}
+        alt="Chip"
+        layout="fill" // Mengisi kontainer
+        objectFit="cover"
+        quality={100}
+        className="relative-full z-0 saturate-0"
+      />
+      <div className="absolute inset-0 bg-primary opacity-80"></div>
+     </div>
       
       <div className="mx-auto px-12 pt-8">
       <ScrollReveal>
-      <h1 className="text-5xl font-fleur mb-6">{footerProps.title}</h1>
+      <h1 className="text-5xl font-fleur mb-6 text-gold font-bold">{footerProps.title}</h1>
         </ScrollReveal>
         <ScrollReveal>
         {footerProps.description.map((text, index) => (
@@ -53,9 +48,9 @@ const Footer: React.FC = () => {
         <h1 className="text-sm font-mono pt-4 pb-4">{footerProps.greeting}</h1>
         </ScrollReveal>
         <ScrollReveal>
-        <h1 className="text-5xl font-lavishly">{footerProps.names.groom}</h1>
-        <h1 className="text-5xl font-lavishly">&</h1>
-        <h1 className="text-5xl font-lavishly">{footerProps.names.bride}</h1>
+        <h1 className="text-5xl font-lavishly font-bold text-gold">{footerProps.names.groom}</h1>
+        <h1 className="text-5xl font-lavishly font-bold text-gold">&</h1>
+        <h1 className="text-5xl font-lavishly font-bold text-gold">{footerProps.names.bride}</h1>
         <h1 className="text-sm font-poppins">{footerProps.family}</h1>
         </ScrollReveal>
         

@@ -2,9 +2,9 @@ import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
 
 const images = [
-  { src: "/images/WeddingBG.jpg", alt: "Photo 1", size: "col-span-2 row-span-2" },
-  { src: "/images/WeddingBG.jpg", alt: "Photo 2", size: "" },
-  { src: "/images/WeddingBG.jpg", alt: "Photo 3", size: "" },
+  // { src: "/images/WeddingBG.jpg", alt: "Photo 1", size: "col-span-2 row-span-2" },
+  // { src: "/images/WeddingBG.jpg", alt: "Photo 2", size: "" },
+  // { src: "/images/WeddingBG.jpg", alt: "Photo 3", size: "" },
   { src: "/images/WeddingBG.jpg", alt: "Photo 4", size: "" },
   { src: "/images/WeddingBG.jpg", alt: "Photo 5", size: "col-span-2 row-span-2" },
   { src: "/images/WeddingBG.jpg", alt: "Photo 6", size: "" },
@@ -17,7 +17,7 @@ const images = [
 const Gallery: React.FC = () => {
   return (
     <ScrollReveal>
-    <div className="container mx-auto p-2 bg-primary">
+    <div className="container mx-auto p-2">
       <div className="grid grid-cols-3 gap-1 md:grid-cols-4">
         {images.map((image, index) => (
           <div

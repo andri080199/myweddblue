@@ -13,10 +13,11 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary: #e6bdbb;
-  --textprimary: #EEE0C9;
-  --darkprimary:#914744;
-  --primarylight: #f7eae9;
+  --primary: #9fd1ea;
+  --textprimary: #1d6087;
+  --darkprimary:#3295c5;
+  --primarylight: #e5f1f9;
+  --gold: #705a23;
 }
 
 @media (prefers-color-scheme: dark) {

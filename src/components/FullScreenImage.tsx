@@ -1,8 +1,8 @@
 // File: components/FullScreenImage.tsx
 import React from "react";
 import Image from "next/image";
-import BoxTime from "./BoxTime";
 import FullScreenImageFront from "./FullScreenImageFront";
+import BoxWithImage from "./BoxWithImage";
 
 
 interface FullScreenImageProps {
@@ -26,9 +26,12 @@ const FullScreenImage: React.FC<FullScreenImageProps> = ({ src, alt = "Full Scre
       />
       {/* <div className="absolute bottom-0 left-0 right-0 bg-primarylight opacity-50 h-1/3"></div> */}
       <div className="absolute bottom-0 left-0 w-full flex justify-center z-10 p-2 pb-8">
-        <BoxTime />
+        
+        {/* <BoxTime /> */}
       </div>
+      
     </div>
+    <BoxWithImage />
     </>
   );
 };

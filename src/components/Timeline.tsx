@@ -54,6 +54,7 @@ const Timeline: React.FC = () => {
       ref={timelineRef}
       className="relative w-full max-w-2xl mx-auto"
     >
+      
       {/* Garis vertikal utama */}
       <div className="absolute left-6 top-0 h-full w-1 bg-primarylight z-0 overflow-hidden">
         {/* Progress bar biru */}
@@ -69,6 +70,7 @@ const Timeline: React.FC = () => {
           key={index}
           className="relative flex items-center mb-8 last:mb-0"
         >
+           
           {/* Lingkaran penanda */}
           <div className="absolute left-2.5 top-0 z-20 text-white text-sm font-bold">
           <span className="text-2xl animate-pulse text-red-500">❤️</span>
@@ -78,7 +80,7 @@ const Timeline: React.FC = () => {
           <ScrollReveal>
           <div className="ml-12 bg-primarylight p-2 rounded-xl mx-auto w-3/4 border-2 border-darkprimary shadow-lg shadow-darkprimary">
             <h3 className="text-xl font-bold text-darkprimary">{item.title}</h3>
-            <p className="text-sm text-gray-600">{item.description}</p>
+            <p className="text-sm text-textprimary">{item.description}</p>
           </div>
           </ScrollReveal>
           

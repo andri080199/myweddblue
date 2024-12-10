@@ -15,6 +15,7 @@ export default {
         textprimary: "var(--textprimary)",
         darkprimary: "var(--darkprimary)",
         primarylight: "var(--primarylight)",
+        gold: "var(--gold)",
       },
       fontFamily: {
         merienda: ["var(--font-merienda)", "cursive"],
@@ -24,6 +25,8 @@ export default {
         poppins: ["var(--font-poppins)", "sans-serif"],
         sans: ["var(--font-geist-sans)", "var(--font-inter)", "sans-serif"],
         mono: ["var(--font-geist-mono)", "monospace"],
+        allura: ["var(--font-allura)", "cursive"],
+        
       },
       keyframes: {
         bounceDown: {

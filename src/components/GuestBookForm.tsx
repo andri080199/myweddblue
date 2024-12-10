@@ -64,13 +64,15 @@ const GuestBookForm: React.FC<GuestBookFormProps> = ({ onNewEntry }) => {
   };
 
   return (
+    
     <ScrollReveal>
     <div className="mx-auto bg-primarylight shadow-lg rounded-2xl p-6">
-      <h2 className="text-2xl font-bold mb-4 text-darkprimary font-lavishly text-center">Pray & Wish</h2>
+      
+      <h2 className="text-2xl font-bold mb-4 text-gold font-lavishly text-center">Pray & Wish</h2>
       <h1 className="text-sm font-merienda mb-4 text-center text-darkprimary">Beri Ucapan dan Doa kepada kami yang sedang berbahagia.</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-darkprimary">
+          <label htmlFor="name" className="block text-sm font-medium text-textprimary">
             Name
           </label>
           <input
@@ -79,13 +81,13 @@ const GuestBookForm: React.FC<GuestBookFormProps> = ({ onNewEntry }) => {
             type="text"
             value={formData.name}
             onChange={handleInputChange}
-            className="block w-full mt-1 p-2 border text-darkprimary border-darkprimary rounded-md shadow-sm focus:ring-darkprimary focus:border-darkprimary"
+            className="block w-full mt-1 p-2 border text-textprimary border-textprimary rounded-md shadow-sm focus:ring-textprimary focus:border-textprimary"
             placeholder="Enter your name"
             required
           />
         </div>
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-darkprimary">
+          <label htmlFor="message" className="block text-sm font-medium text-textprimary">
             Your Message
           </label>
           <textarea
@@ -93,7 +95,7 @@ const GuestBookForm: React.FC<GuestBookFormProps> = ({ onNewEntry }) => {
             name="message"
             value={formData.message}
             onChange={handleInputChange}
-            className="block w-full mt-1 p-2 border text-darkprimary border-darkprimary rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="block w-full mt-1 p-2 border text-textprimary border-textprimary rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             rows={4}
             placeholder="Write your prayer or wishes"
             required
@@ -101,12 +103,12 @@ const GuestBookForm: React.FC<GuestBookFormProps> = ({ onNewEntry }) => {
         </div>
         <button
           type="submit"
-          className="w-full bg-darkprimary text-white py-2 px-4 rounded-md hover:bg-primary"
+          className="w-full bg-textprimary text-white py-2 px-4 rounded-md hover:bg-primary"
         >
           Beri Ucapan
         </button>
         {feedback && (
-          <p className={`mt-2 text-sm font-mono text-center ${feedback.includes("successfully") ? "text-darkprimary" : "text-red-500"}`}>
+          <p className={`mt-2 text-sm font-mono text-center ${feedback.includes("successfully") ? "text-textprimary" : "text-red-500"}`}>
             {feedback}
           </p>
         )}

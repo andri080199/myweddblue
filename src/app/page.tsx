@@ -25,14 +25,14 @@ const Page: React.FC = () => {
     <>
     <div id="fullscreen-image" className="flex items-center justify-center min-h-screen bg-gray-100">
       <FullScreenImage
-        src="/images/WeddingBG.jpg" // Path gambar
+        src="/images/PohonPutih.jpg" // Path gambar
         alt="Example Full Screen Image"
       />
     </div>
     <KutipanAyat/>
     <Welcome/>
-    <div className="relative min-h-screen bg-primary py-12">
-    <div className='absolute inset-0 overflow-hidden z-20'>
+    <div className="relative h-max bg-primary py-12">
+    {/* <div className='absolute inset-0 overflow-hidden z-20'>
       <Image
         src={"/images/PojokKananBunga.png"}
         alt="Chip"
@@ -48,8 +48,19 @@ const Page: React.FC = () => {
         height={170}
         className="absolute -top-16 -left-12 z-0 animate-tiltLeft" 
         />
-      </div>
-      <h1 className="text-5xl font-bold text-center mb-8 font-lavishly text-darkprimary ">Love Story</h1>
+      </div> */}
+      <h1 className="relative z-30 text-5xl font-bold text-center mb-8 font-lavishly text-gold">Love Story</h1>
+      <div>
+     <Image
+        src={"/images/BangkuSalju.jpg"}
+        alt="Chip"
+        layout="fill" // Mengisi kontainer
+        objectFit="cover"
+        quality={100}
+        className="relativeh-full z-0 saturate-0"
+      />
+      <div className="absolute inset-0 bg-primarylight opacity-60"></div>
+     </div>
       <Timeline />
     </div>
     <WeddingEvent/>

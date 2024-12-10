@@ -5,35 +5,21 @@ import ScrollReveal from './ScrollReveal';
 
 const OurGallery: React.FC = () => {
     return (
-        <div className='relative bg-primary'>
+        <div className='relative'>
           <ScrollReveal>
-            <h1 className='text-center font-fleur text-5xl py-8 text-darkprimary'>Our Gallery</h1>
+            <h1 className='text-center font-fleur text-5xl py-8 text-gold font-bold'>Our Gallery</h1>
           </ScrollReveal>
-            <div className='absolute inset-0 overflow-hidden'>
-      <Image
-        src={"/images/PojokKananBunga.png"}
+          <div>
+     <Image
+        src={"/images/PohonPutih.jpg"}
         alt="Chip"
-        width={170}
-        height={170}
-        className="absolute -top-16 -right-12 z-0 animate-tiltRight" 
+        layout="fill" // Mengisi kontainer
+        objectFit="cover"
+        quality={100}
+        className="relative-full -z-20 saturate-0"
       />
-
-      <Image
-        src={"/images/PojokKiriBunga.png"}
-        alt="Chip"
-        width={170}
-        height={170}
-        className="absolute -top-16 -left-12 z-0 animate-tiltLeft" 
-        />
-
-      {/* <Image
-        src={"/images/bungaBottom.png"}
-        alt="Chip"
-        width={600}
-        height={350}
-        className="absolute -bottom-6 z-0 animate-bounceUp" // Membalik secara horizontal
-        /> */}
-      </div>
+      <div className="absolute inset-0 bg-primarylight opacity-60 -z-20"></div>
+     </div>
             <Gallery/>
         </div>
     );

@@ -18,10 +18,23 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
   source = "(Q.S. Ar-Rum : 21)",
 }) => {
   return (
-    <div className="w-full h-screen px-8 py-24 bg-gradient-to-b from-primary to-blue-50 shadow-md text-center relative overflow-hidden">
+    <>
+    <div className="w-full h-max px-8 py-12 shadow-md text-center relative overflow-hidden">
+     <div>
+     <Image
+        src={"/images/BangkuSalju.jpg"}
+        alt="Chip"
+        layout="fill" // Mengisi kontainer
+        objectFit="cover"
+        quality={100}
+        className="absolute top-0 left-0 h-h-screen z-0 saturate-50"
+      />
+     </div>
+       {/* Lapisan Warna */}
+    <div className="absolute inset-0 bg-darkprimary opacity-80 z-10"></div>
       {/* Efek cahaya */}
       {/* <div className="absolute inset-0 rounded-lg bg-gradient-radial from-white/50 to-transparent opacity-60"></div> */}
-      <div className="absolute inset-0 z-0">
+      {/* <div className="absolute inset-0 z-0">
       <Image
         src={"/images/bungaTop.png"}
         alt="Chip"
@@ -37,9 +50,9 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
         height={400}
         className="absolute -bottom-8 left-0 z-0 animate-bounceUp" // Posisi absolute untuk Chip
       />
-      </div>
+      </div> */}
 
-      <h2 className="text-5xl font-semibold font-lavishly mb-8 mt-6 text-darkprimary relative z-10 flex items-center justify-center space-x-1">
+      <h2 className="text-5xl font-semibold font-lavishly mb-8 mt-6 text-gold relative z-10 flex items-center justify-center space-x-1">
         <ScrollReveal>
           <span className="relative -top-4">M</span>
         </ScrollReveal>
@@ -50,15 +63,18 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
           <span className="relative top-4">A</span>
         </ScrollReveal>
       </h2>
+      <div className="relative z-20">
       <ScrollReveal>
-      <p className="text-lg font-merienda text-darkprimary mb-4 relative z-10">
+      <p className="text-sm font-merienda text-primarylight mb-4">
         {quote}
       </p>
-      <p className="text-sm text-darkprimary font-medium relative z-10">
+      <p className="text-sm text-primarylight font-medium">
         {source}
       </p>
       </ScrollReveal>
+      </div>
     </div>
+    </>
   );
 };
 

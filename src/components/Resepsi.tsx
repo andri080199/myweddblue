@@ -1,12 +1,26 @@
 import React from 'react';
 import ScrollReveal from './ScrollReveal';
+import Image from 'next/image';
 
 const Resepsi: React.FC = () => {
   return (
-    <div className="mx-8">
+    <div className="relative mx-8">
+      <div className="absolute inset-0 z-10">
+            <Image
+              src="/images/MerpatiBangku.jpg" // Ganti dengan path gambar Anda
+              alt="Background"
+              layout="fill"
+              objectFit="cover"
+              priority // Agar gambar ini dimuat lebih awal
+              className='rounded-br-3xl'
+            />
+            {/* Overlay untuk memastikan teks terbaca */}
+           <div className="absolute inset-0 bg-primarylight opacity-80 rounded-br-3xl"></div>
+          </div>
       <div className="flex h-full mt-4">
         {/* Sisi Kiri - Informasi Resepsi */}
-        <div className="w-full bg-blue-50 flex-row p-4 py-6 text-darkprimary text-right">
+        <div className="relative z-10 text-textprimary">
+        <div className="w-full flex-row p-4 py-6 text-right">
           <ScrollReveal>
             <h1 className="text-md font-merienda">Minggu, 28 April 2024</h1>
             </ScrollReveal>
@@ -25,9 +39,10 @@ const Resepsi: React.FC = () => {
           </p>
           </ScrollReveal>
         </div>
+        </div>
 
         {/* Sisi Kanan - Label Resepsi */}
-        <div className="w-12 bg-darkprimary flex items-center justify-center rounded-br-3xl">
+        <div className="w-12 bg-darkprimary flex items-center justify-center rounded-br-3xl z-20">
           <p className="text-white text-xl font-merienda rotate-90 text-nowrap">Resepsi</p>
         </div>
       </div>

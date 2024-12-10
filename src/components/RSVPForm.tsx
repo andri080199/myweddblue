@@ -37,32 +37,26 @@ const RSVPForm: React.FC = () => {
   };
 
   return (
-    <div className="relative bg-darkprimary flex items-center justify-center h-full py-8 px-6 overflow-hidden">
-       <div className='z-10'>
-      <Image
-        src={"/images/PojokKananBunga.png"}
+    <div className="relative flex items-center justify-center h-full py-8 px-6 overflow-hidden">
+        <div>
+     <Image
+        src={"/images/PohonPutih.jpg"}
         alt="Chip"
-        width={150}
-        height={150}
-        className="absolute -top-16 -right-12 z-0 animate-tiltRight" 
+        layout="fill" // Mengisi kontainer
+        objectFit="cover"
+        quality={100}
+        className="relative-full -z-20 saturate-0"
       />
-
-      <Image
-        src={"/images/PojokKiriBunga.png"}
-        alt="Chip"
-        width={150}
-        height={150}
-        className="absolute -top-16 -left-12 z-0 animate-tiltLeft" 
-        />
-      </div>
+      <div className="absolute inset-0 bg-primarylight opacity-20 -z-20"></div>
+     </div>
       <ScrollReveal>
 
     <div className="w-full mx-auto p-6 px-10 bg-primarylight shadow-md rounded-2xl">
-      <h2 className="text-2xl font-semibold mb-2 text-center text-darkprimary font-lavishly">Wedding RSVP</h2>
-      <h1 className="text-sm font-merienda mb-4 text-center text-darkprimary">bantu kami untuk mempersiapkan segalanya lebih baik dengan mengisi form kehadiran dibawah ini.</h1>
+      <h2 className="text-3xl font-semibold mb-2 text-center text-gold font-lavishly">Wedding RSVP</h2>
+      <h1 className="text-sm font-merienda mb-4 text-center text-textprimary">bantu kami untuk mempersiapkan segalanya lebih baik dengan mengisi form kehadiran dibawah ini.</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="font-mono">
-          <label htmlFor="name" className="block text-sm font-medium text-darkprimary">
+          <label htmlFor="name" className="block text-sm font-medium text-textprimary">
             Nama Kamu
           </label>
           <input
@@ -70,13 +64,13 @@ const RSVPForm: React.FC = () => {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full mt-1 p-2 border border-darkprimary rounded-lg focus:outline-1 focus:outline-darkprimary focus:ring-primary focus:border-primary text-darkprimary"
+            className="w-full mt-1 p-2 border border-textprimary rounded-lg focus:outline-1 focus:outline-textprimary focus:ring-primary focus:border-primary text-textprimary"
             placeholder="Masukkan Nama Kamu"
           />
         </div>
 
         <div>
-          <p className="text-sm font-medium text-darkprimary">Apakah Kamu Akan Hadir?</p>
+          <p className="text-sm font-medium text-textprimary">Apakah Kamu Akan Hadir?</p>
           <div className="flex space-x-4 mt-2">
             <button
               type="button"
