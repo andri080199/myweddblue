@@ -15,7 +15,7 @@ const FullScreenImage: React.FC<FullScreenImageProps> = ({ src, alt = "Full Scre
     <>
     {/* <FullScreenImageFront/> */}
     <FullScreenImageFront/>
-    <div className="relative w-full h-screen z-10">
+    <div className="relative w-full h-screen z-10 pt-20">
       <Image 
         src={src} 
         alt={alt} 
@@ -29,9 +29,9 @@ const FullScreenImage: React.FC<FullScreenImageProps> = ({ src, alt = "Full Scre
         
         {/* <BoxTime /> */}
       </div>
-      
+      <BoxWithImage />
     </div>
-    <BoxWithImage />
+    
     </>
   );
 };
