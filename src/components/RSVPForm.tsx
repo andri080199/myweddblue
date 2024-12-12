@@ -99,7 +99,7 @@ const RSVPForm: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full py-2 px-4 bg-darkprimary text-white rounded-lg hover:bg-darkprimary focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full py-2 px-4 bg-darkprimary text-white rounded-lg hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary"
         >
           Konfirmasi Kehadiran
         </button>

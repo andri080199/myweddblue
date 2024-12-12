@@ -20,6 +20,7 @@ const Card: React.FC = () => {
       alt={imageAlt}
       layout="fill" // Mengisi kontainer
       objectFit="cover"
+      objectPosition="center"
       quality={100}
       className="p-2 rounded-t-full"
     />

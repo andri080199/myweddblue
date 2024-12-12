@@ -44,8 +44,12 @@ const WeddingGift: React.FC = () => {
         memberi adalah ungkapan tanda kasih, Anda dapat memberi kado secara cashless.
       </h1>
         </ScrollReveal>
+        <ScrollReveal>
       <BriCard/>
+      </ScrollReveal>
+      <ScrollReveal>
       <DanaCard/>
+      </ScrollReveal>
     </div>
   );
 };
