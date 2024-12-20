@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 
 const DanaCard: React.FC = () => {
-  const rekening = "0821-7213-8123";
+  const rekening = "0852-7960-0131";
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async () => {
