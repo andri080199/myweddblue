@@ -37,7 +37,7 @@ const RSVPForm: React.FC = () => {
   };
 
   return (
-    <div className="relative flex items-center justify-center h-full py-8 px-6 overflow-hidden">
+    <div id="rsvp" className="relative flex items-center justify-center h-full py-8 px-6 overflow-hidden">
         <div>
      <Image
         src={"/images/PohonPutih.jpg"}

@@ -7,7 +7,7 @@ import ScrollReveal from './ScrollReveal';
 // Komponen WeddingEvent dengan TypeScript
 const WeddingEvent: React.FC = () => {
   return (
-    <div className="relative w-full h-full pt-36 pb-12 bg-gradient-to-tr from-primary to-primarylight">
+    <div id='event' className="relative w-full h-full pt-36 pb-12 bg-gradient-to-tr from-primary to-primarylight">
       <div className='absolute inset-0 top-10 z-20'>
         <ScrollReveal>
         <h1 className='text-center font-fleur text-gold text-5xl font-bold'>Wedding</h1>

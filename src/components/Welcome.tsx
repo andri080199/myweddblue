@@ -22,7 +22,7 @@ const Welcome: React.FC = () => {
   ];
 
   return (
-    <div className="relative w-full px-8 py-6 bg-primarylight shadow-md text-center z-10">
+    <div id="about" className="relative w-full px-8 py-6 bg-primarylight shadow-md text-center z-10">
       <div>
      <Image
         src={"/images/PohonPutih.jpg"}

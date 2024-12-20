@@ -6,7 +6,7 @@ import ScrollReveal from "./ScrollReveal";
 
 const WeddingGift: React.FC = () => {
   return (
-    <div className="relative px-8 bg-primarylight z-10 overflow-hidden pb-12">
+    <div id="gift" className="relative px-8 bg-primarylight z-10 overflow-hidden pb-12">
       <ScrollReveal>  
       <h1 className=" font-fleur text-5xl py-8 text-center text-gold font-bold">
         Wedding Gift

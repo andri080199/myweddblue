@@ -12,6 +12,8 @@ import GuestBookList from "@/components/GuestBookList";
 import Footer from "@/components/Footer";
 import Timeline from "@/components/Timeline";
 import Image from "next/image";
+import Navbar from "@/components/Navbar";
+import MusicCircle from "@/components/MusicCircle";
 
 const Page: React.FC = () => {
   useEffect(() => {
@@ -31,7 +33,7 @@ const Page: React.FC = () => {
     </div>
     <KutipanAyat/>
     <Welcome/>
-    <div className="relative h-max bg-primary py-12">
+    <div id="lovestory" className="relative h-max bg-primary py-12">
     {/* <div className='absolute inset-0 overflow-hidden z-20'>
       <Image
         src={"/images/PojokKananBunga.png"}
@@ -69,6 +71,8 @@ const Page: React.FC = () => {
     <RSVPForm/>
     <GuestBookList/>
     <Footer/>
+    <Navbar/>
+    <MusicCircle/>
     </div>
   );
 };

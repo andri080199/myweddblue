@@ -5,7 +5,7 @@ import ScrollReveal from './ScrollReveal';
 
 const OurGallery: React.FC = () => {
     return (
-        <div className='relative'>
+        <div id='gallery' className='relative'>
           <ScrollReveal>
             <h1 className='text-center font-fleur text-5xl py-8 text-gold font-bold'>Our Gallery</h1>
           </ScrollReveal>
