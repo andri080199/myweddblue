@@ -10,14 +10,14 @@ const Welcome: React.FC = () => {
       id: 1,
       type: "h2",
       content: "Assalamualaikum Wr.Wb.",
-      className: "text-3xl font-lavishly mb-4 text-textprimary",
+      className: "relative text-3xl font-lavishly mb-4 text-textprimary",
     },
     {
       id: 2,
       type: "p",
       content:
         "Dengan memohon Rahmat dan Ridho Allah SWT, Kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dalam pernikahan kami",
-      className: "text-sm font-merienda text-textprimary",
+      className: "relative text-sm font-merienda text-textprimary",
     },
   ];
 

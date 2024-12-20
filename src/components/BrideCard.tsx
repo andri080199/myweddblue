@@ -30,7 +30,7 @@ const BrideCard: React.FC = () => {
       {/* Bagian nama dan informasi */}
       
       <ScrollReveal>
-      <div className="text-center mt-6 text-textprimary justify-center items-center mx-8">
+      <div className="relative text-center mt-6 text-textprimary justify-center items-center mx-8">
         <h1 className="font-merienda text-sm font-bold">Putri Pertama dari Bapak Yusuf Ali dan Ibu Nurbaya</h1>
       </div>
       </ScrollReveal>

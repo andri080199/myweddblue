@@ -47,7 +47,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({ children, threshold = 0.1 }
     <div
     ref={elementRef}  // Menambahkan ref yang benar
     className={`transition-all duration-1000 ease-in-out ${
-      isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
+      isVisible ? "sclale-100" : "scale-0"
     }`}
   >
     {children}

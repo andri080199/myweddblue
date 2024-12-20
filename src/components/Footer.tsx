@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
       <div className="absolute inset-0 bg-primary opacity-80"></div>
      </div>
       
-      <div className="mx-auto px-12 pt-8">
+      <div className="relative mx-auto px-12 pt-8">
       <ScrollReveal>
       <h1 className="text-5xl font-fleur mb-6 text-gold font-bold">{footerProps.title}</h1>
         </ScrollReveal>

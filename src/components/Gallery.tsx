@@ -29,7 +29,7 @@ const Gallery: React.FC = () => {
               alt={image.alt}
               layout="fill"
               objectFit="cover"
-              className="object-cover hover:scale-110 transition-transform duration-300 ease-in-out"
+              className="object-cover hover:scale-110 transition-transform duration-300 ease-in-out overflow-hidden"
             />
           </div>
         ))}
