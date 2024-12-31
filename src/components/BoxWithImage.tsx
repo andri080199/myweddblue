@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import ScrollReveal from './ScrollReveal';
 
 const Card: React.FC = () => {
   const imageSrc = '/images/WeddingBG.jpg'; // Path
@@ -26,9 +27,15 @@ const Card: React.FC = () => {
     />
   </div>
   <div className="relative flex flex-col justify-center items-center px-6 py-4 gap-2">
+    <ScrollReveal>
     <h1 className="font-bold uppercase font-merienda text-xl mb-2 text-darkprimary text-center">{title}</h1>
-    <p className="text-gold font-lavishly text-4xl text-center font-bold">{description}</p>
-    <p className="text-darkprimary font-merienda text-md font-bold">{timewedding}</p>
+    </ScrollReveal>
+    <ScrollReveal>
+    <p className="text-gold font-lavishly text-4xl lg:text-5xl text-center font-bold">{description}</p>
+    </ScrollReveal>
+    <ScrollReveal>
+    <p className="text-darkprimary font-merienda text-md font-bold lg:text-xl lg:pt-4">{timewedding}</p>
+    </ScrollReveal>
   </div>
 </div>
 

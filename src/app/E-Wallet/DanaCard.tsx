@@ -21,6 +21,9 @@ const DanaCard: React.FC = () => {
     <div className="w-72 h-52 px-6 pt-8 bg-primary rounded-xl shadow-lg text-white items-center mx-auto"
     style={{
       backgroundImage: "url('/images/bgcard.jpg')", // URL gambar di folder public
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
     }}>
       {/* Logo BRI */}
       <div className="flex justify-end">
@@ -47,7 +50,7 @@ const DanaCard: React.FC = () => {
       <div className="relative w-full h-16">
         <button
           onClick={handleCopy}
-          className="absolute bottom-2 -right-2 px-4 py-2 bg-primary rounded-lg text-darkprimary font-semibold text-sm"
+          className="absolute bottom-2 -right-2 px-4 py-2 bg-primary rounded-lg text-gold hover:scale-105 shadow-md shadow-darkprimary font-semibold text-sm"
         >
           {isCopied ? "Berhasil Disalin" : "Salin No. Dana"}
         </button>

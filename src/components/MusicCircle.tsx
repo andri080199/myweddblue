@@ -47,7 +47,7 @@ const MusicCircle: React.FC = () => {
   return (
     <div
       ref={circleRef}
-      className={`fixed top-3/4 right-4 z-40 w-12 h-12 rounded-full flex items-center justify-center shadow-md shadow-darkprimary ${
+      className={`fixed top-3/4 lg:right-1/3 lg:mr-4 md:mr-4 md:right-1/4 right-4 z-50 w-12 h-12 rounded-full shadow-md shadow-darkprimary ${
         isPlaying ? 'slow-spin' : 'pause-spin'
       }`}
       onClick={togglePlayPause}

@@ -1,10 +1,11 @@
 import React from 'react';
 import ScrollReveal from './ScrollReveal';
 import Image from 'next/image';
+import OpenGoogleMapsButton from './OpenGoogleMapsButton';
 
 const AkadNikah: React.FC = () => {
   return (
-    <div className="relative mx-8" >
+    <div className="relative mx-8 mb-12" >
       <div className="absolute inset-0 z-10">
             <Image
               src="/images/MerpatiBangku.jpg" // Ganti dengan path gambar Anda
@@ -23,7 +24,7 @@ const AkadNikah: React.FC = () => {
           <p className="text-white text-xl font-merienda -rotate-90 text-nowrap">Akad Nikah</p>
         </div>
         {/* Sisi Kiri - Informasi Resepsi */}
-        <div className="relative z-10 text-textprimary">
+        <div className="relative z-10 text-textprimary mb-8">
         <div className="w-full flex-row p-4 py-6 text-left">
           <ScrollReveal>
             <h1 className="text-md font-merienda">Minggu, 28 April 2024</h1>
@@ -47,7 +48,10 @@ const AkadNikah: React.FC = () => {
 
        
       </div>
-      
+      <div className='absolute -bottom-2 right-0 justify-center items-center z-50'>
+
+      <OpenGoogleMapsButton/>
+      </div>
     </div>
   );
 };

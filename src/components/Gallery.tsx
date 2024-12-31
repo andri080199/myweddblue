@@ -18,7 +18,7 @@ const Gallery: React.FC = () => {
   return (
     <ScrollReveal>
     <div className="container mx-auto p-2">
-      <div className="grid grid-cols-3 gap-1 md:grid-cols-4">
+      <div className="grid grid-cols-3 gap-1 md:p-4 md:gap-2">
         {images.map((image, index) => (
           <div
             key={index}

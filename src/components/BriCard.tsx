@@ -21,6 +21,9 @@ const BriCard: React.FC = () => {
     <div className="w-72 h-52 px-6 pt-8 my-6 bg-primary rounded-xl shadow-lg text-white items-center mx-auto"
     style={{
       backgroundImage: "url('/images/bgcard.jpg')", // URL gambar di folder public
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
     }}>
       <div className="relative w-full h-16"> {/* Parent Container (relative) */}
   {/* Logo Chip */}
@@ -53,7 +56,7 @@ const BriCard: React.FC = () => {
       <div className="relative w-full h-16">
         <button
           onClick={handleCopy}
-          className="absolute bottom-4 -right-2 px-2 py-2 bg-primary rounded-lg text-darkprimary font-semibold text-sm"
+          className="absolute bottom-4 -right-2 px-2 py-2 bg-primary rounded-lg text-gold hover:scale-105 shadow-md shadow-darkprimary font-semibold text-sm"
         >
           {isCopied ? "Berhasil Disalin" : "Salin No. Rekening"}
         </button>

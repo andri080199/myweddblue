@@ -24,7 +24,7 @@ const Page: React.FC = () => {
     }
   }, []);
   return (
-    <div className="md:w-1/2 lg:w-1/3 mx-auto">
+    <div className="relative md:w-1/2 lg:w-1/3 mx-auto">
     <div id="fullscreen-image" className="flex items-center justify-center min-h-screen bg-gray-100">
       <FullScreenImage
         src="/images/PohonPutih.jpg" // Path gambar
@@ -72,7 +72,10 @@ const Page: React.FC = () => {
     <GuestBookList/>
     <Footer/>
     <Navbar/>
+    <div className="relative mx-auto bg-gray-300">
     <MusicCircle/>
+    </div>
+  
     </div>
   );
 };

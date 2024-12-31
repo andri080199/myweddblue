@@ -3,6 +3,7 @@ import BriCard from "./BriCard";
 import DanaCard from "@/app/E-Wallet/DanaCard";
 import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
+import Gift from "./Gift";
 
 const WeddingGift: React.FC = () => {
   return (
@@ -49,6 +50,10 @@ const WeddingGift: React.FC = () => {
       </ScrollReveal>
       <ScrollReveal>
       <DanaCard/>
+      </ScrollReveal>
+      <ScrollReveal>
+
+      <Gift/>
       </ScrollReveal>
     </div>
   );

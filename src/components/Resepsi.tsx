@@ -1,6 +1,7 @@
 import React from 'react';
 import ScrollReveal from './ScrollReveal';
 import Image from 'next/image';
+import OpenGoogleMapsButton from './OpenGoogleMapsButton';
 
 const Resepsi: React.FC = () => {
   return (
@@ -19,7 +20,7 @@ const Resepsi: React.FC = () => {
           </div>
       <div className="flex h-full mt-4">
         {/* Sisi Kiri - Informasi Resepsi */}
-        <div className="relative z-10 text-textprimary">
+        <div className="relative z-10 text-textprimary mb-8">
         <div className="w-full flex-row p-4 py-6 text-right">
           <ScrollReveal>
             <h1 className="text-md font-merienda">Minggu, 28 April 2024</h1>
@@ -37,14 +38,21 @@ const Resepsi: React.FC = () => {
             Jl. Jend. Sudirman Kav. 9 Cikokol
             Sukasari, Tangerang, Banten
           </p>
+          
           </ScrollReveal>
+         
         </div>
+       
         </div>
 
         {/* Sisi Kanan - Label Resepsi */}
         <div className="w-12 bg-darkprimary flex items-center justify-center rounded-br-3xl z-20">
           <p className="text-white text-xl font-merienda rotate-90 text-nowrap">Resepsi</p>
         </div>
+      </div>
+      <div className='absolute -bottom-2 justify-center items-center z-50'>
+
+      <OpenGoogleMapsButton/>
       </div>
     </div>
   );

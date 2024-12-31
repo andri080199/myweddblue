@@ -49,6 +49,11 @@ const Welcome: React.FC = () => {
       <ScrollReveal>
       <BrideCard />
       </ScrollReveal>
+      {/* <ScrollReveal>
+      <div className="relative z-20 text-5xl text-gold my-4 font-allura font-bold">
+        <h1>&</h1>
+      </div>
+      </ScrollReveal> */}
       <ScrollReveal>
       <GroomCard />
       </ScrollReveal>

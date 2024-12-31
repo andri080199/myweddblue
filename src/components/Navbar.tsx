@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
     {
       name: 'Services',
       id: 'lovestory',
-      imgSrc: '/icons/love.png', // Path gambar Services
+      imgSrc: '/icons/love-letter.png', // Path gambar Services
       imgAlt: 'Services Icon',
     },
     {

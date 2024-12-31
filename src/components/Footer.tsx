@@ -55,7 +55,7 @@ const Footer: React.FC = () => {
         </ScrollReveal>
         
       </div>
-      <p className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-sm">
+      <p className="absolute bottom-20 left-1/2 transform -translate-x-1/2 text-sm">
         Dibuat dengan <span className="text-red-500">❤️</span>
       </p>
     </footer>
