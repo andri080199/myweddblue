@@ -3,9 +3,15 @@ import GuestForm from '@/app/dashboardclient/GuestForm';
 import GuestList from '@/app/dashboardclient/GuestList';
 import { useState, useEffect } from 'react';
 
+interface Guest {
+  id: string;
+  name: string;
+  url: string;
+}
+
 
 const GuestNameInput = () => {
-  const [guests, setGuests] = useState<any[]>([]);
+  const [guests, setGuests] = useState<Guest[]>([]);
 
   const fetchGuestNames = async () => {
     try {

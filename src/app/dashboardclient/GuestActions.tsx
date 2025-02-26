@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-const GuestActions = ({ guest, onDelete }: { guest: any; onDelete: (guestId: string) => void }) => {
+type Guest = {
+  id: string;
+  url: string;
+};
+
+const GuestActions = ({ guest, onDelete }: { guest: Guest; onDelete: (guestId: string) => void }) => {
   const [showModal, setShowModal] = useState(false);
 
   const shareToWhatsApp = (url: string) => {

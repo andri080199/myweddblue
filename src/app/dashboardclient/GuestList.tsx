@@ -1,6 +1,12 @@
 import GuestActions from './GuestActions';
 
-const GuestList = ({ guests, onDelete }: { guests: any[]; onDelete: (guestId: string) => void }) => {
+type Guest = {
+  id: string;
+  name: string;
+  url: string;
+};
+
+const GuestList = ({ guests, onDelete }: { guests: Guest[]; onDelete: (guestId: string) => void }) => {
   return (
     <div className="mt-8 w-full md:w-1/2 text-textprimary font-mono">
       <h2 className="text-xl font-semibold mb-4">Daftar Undangan</h2>

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/Dashboard";
 import Guestbook from "@/components/Guestbook";
-import GuestNameInput from "@/components/GusetNameInput";
+import GuestNameInput from "@/components/GuestNameInput";
 
 const DashboardPage = () => {
   const [selected, setSelected] = useState<"attendance" | "guestbook" | "invitation">("attendance");
