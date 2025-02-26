@@ -1,49 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
+import getDBConnection from "@/utils/db";
 
 interface RSVPRequest {
   name: string;
   isAttending: boolean;
 }
 
-// Fungsi untuk menangani request
+// **POST: Menambahkan RSVP Baru**
 export async function POST(req: NextRequest) {
   try {
-    const body: RSVPRequest = await req.json();
+    const { name, isAttending }: RSVPRequest = await req.json();
 
-    if (!body.name) {
+    if (!name) {
       return NextResponse.json(
         { message: "Name is required" },
         { status: 400 }
       );
     }
 
-    // Path ke file JSON
-    const filePath = path.join(process.cwd(), "public", "data", "guests.json");
+    const responseDate = new Date().toISOString();
+    const db = await getDBConnection();
 
-    // Membaca data dari file JSON
-    const fileData = await fs.readFile(filePath, "utf-8");
-    const guests = JSON.parse(fileData);
+    const result = await db.run(
+      "INSERT INTO rsvp (name, isAttending, responseDate) VALUES (?, ?, ?)",
+      [name, isAttending, responseDate]
+    );
 
-    // Menambahkan data baru
-    const newGuest = {
-      id: guests.length + 1, // ID otomatis berdasarkan jumlah data
-      name: body.name,
-      isAttending: body.isAttending,
-      responseDate: new Date().toISOString(),
-    };
-
-    guests.push(newGuest);
-
-    // Menulis kembali data ke file JSON
-    await fs.writeFile(filePath, JSON.stringify(guests, null, 2), "utf-8");
-
-    return NextResponse.json({ message: "RSVP recorded successfully", newGuest });
+    return NextResponse.json({
+      id: result.lastID,
+      name,
+      isAttending,
+      responseDate,
+    });
   } catch (error) {
     console.error("Error handling RSVP:", error);
     return NextResponse.json(
       { message: "Error processing RSVP" },
+      { status: 500 }
+    );
+  }
+}
+
+// **GET: Mengambil Semua RSVP**
+export async function GET() {
+  try {
+    const db = await getDBConnection();
+    const guests = await db.all("SELECT * FROM rsvp ORDER BY responseDate DESC");
+
+    return NextResponse.json(guests);
+  } catch (error) {
+    console.error("Error fetching RSVP data:", error);
+    return NextResponse.json(
+      { message: "Error fetching RSVP data" },
       { status: 500 }
     );
   }

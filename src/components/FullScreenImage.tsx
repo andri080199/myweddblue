@@ -8,13 +8,14 @@ import BoxWithImage from "./BoxWithImage";
 interface FullScreenImageProps {
   src: string;
   alt?: string;
+  guestName: string; // Tambahkan guestName sebagai props
 }
 
-const FullScreenImage: React.FC<FullScreenImageProps> = ({ src, alt = "Full Screen Image" }) => {
+const FullScreenImage: React.FC<FullScreenImageProps> = ({ src, alt = "Full Screen Image", guestName }) => {
   return (
     <>
     {/* <FullScreenImageFront/> */}
-    <FullScreenImageFront/>
+    <FullScreenImageFront guestName={guestName}/>
     <div id="home" className="relative w-full h-screen z-10 pt-20">
       <Image 
         src={src} 

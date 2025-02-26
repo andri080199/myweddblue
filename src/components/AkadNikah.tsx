@@ -48,7 +48,7 @@ const AkadNikah: React.FC = () => {
 
        
       </div>
-      <div className='absolute -bottom-2 right-0 justify-center items-center z-50'>
+      <div className='absolute -bottom-2 right-0 justify-center items-center z-40'>
 
       <OpenGoogleMapsButton/>
       </div>

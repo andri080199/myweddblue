@@ -10,8 +10,6 @@ interface ScrollRevealProps {
 
 const ScrollReveal: React.FC<ScrollRevealProps> = ({ children, threshold = 0.1 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  
-  // Mengubah tipe ref menjadi HTMLDivElement
   const elementRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -28,31 +26,25 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({ children, threshold = 0.1 }
       options
     );
 
-    if (elementRef.current) observer.observe(elementRef.current);
+    const element = elementRef.current; // Simpan referensi elemen
+
+    if (element) observer.observe(element);
 
     return () => {
-      if (elementRef.current) observer.unobserve(elementRef.current);
+      if (element) observer.unobserve(element);
     };
   }, [threshold]);
 
   return (
-    // <div
-    //   ref={elementRef}  // Menambahkan ref yang benar
-    //   className={`transition-all duration-1000 ease-in-out ${
-    //     isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"
-    //   }`}
-    // >
-    //   {children}
-    // </div>
     <div
-    ref={elementRef}  // Menambahkan ref yang benar
-    className={`transition-all duration-1000 ease-in-out ${
-      isVisible ? "sclale-100" : "scale-0"
-    }`}
-  >
-    {children}
-  </div>
+      ref={elementRef}
+      className={`transition-all duration-1000 ease-in-out ${
+        isVisible ? "scale-100" : "scale-0"
+      }`}
+    >
+      {children}
+    </div>
   );
 };
 
-export default ScrollReveal;
+export default React.memo(ScrollReveal);

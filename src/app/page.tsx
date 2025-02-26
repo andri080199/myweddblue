@@ -27,30 +27,12 @@ const Page: React.FC = () => {
     <div className="relative md:w-1/2 lg:w-1/3 mx-auto">
     <div id="fullscreen-image" className="flex items-center justify-center min-h-screen bg-gray-100">
       <FullScreenImage
-        src="/images/PohonPutih.jpg" // Path gambar
-        alt="Example Full Screen Image"
-      />
+          src="/images/PohonPutih.jpg" // Path gambar
+          alt="Example Full Screen Image" guestName={""}      />
     </div>
     <KutipanAyat/>
     <Welcome/>
     <div id="lovestory" className="relative h-max bg-primary py-12">
-    {/* <div className='absolute inset-0 overflow-hidden z-20'>
-      <Image
-        src={"/images/PojokKananBunga.png"}
-        alt="Chip"
-        width={170}
-        height={170}
-        className="absolute -top-16 -right-12 z-0 animate-tiltRight" 
-      />
-
-      <Image
-        src={"/images/PojokKiriBunga.png"}
-        alt="Chip"
-        width={170}
-        height={170}
-        className="absolute -top-16 -left-12 z-0 animate-tiltLeft" 
-        />
-      </div> */}
       <h1 className="relative z-30 text-5xl font-bold text-center mb-8 font-lavishly text-gold">Love Story</h1>
       <div>
      <Image
