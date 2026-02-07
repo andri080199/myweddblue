@@ -1,0 +1,541 @@
+/* Inline Editor Styles */
+
+/* Body scroll lock when modal is open */
+body.modal-open {
+  overflow: hidden !important;
+}
+
+/* Editable Section Styling */
+.editing-active {
+  outline: 2px solid #3b82f6;
+  outline-offset: 4px;
+  background: rgba(59, 130, 246, 0.03);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover effect for editable sections */
+.group:hover {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Inline text editor */
+.inline-text-editor {
+  border: 2px solid #3b82f6;
+  background: white;
+  padding: 8px;
+  border-radius: 4px;
+  color: #111827;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.inline-text-editor::placeholder {
+  color: #6b7280;
+}
+
+.inline-text-editor:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Inline textarea editor */
+.inline-textarea-editor {
+  border: 2px solid #3b82f6;
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  color: #111827;
+  transition: all 0.2s;
+  outline: none;
+  min-height: 80px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.inline-textarea-editor::placeholder {
+  color: #6b7280;
+}
+
+.inline-textarea-editor:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Auto-grow textarea */
+.auto-grow-textarea {
+  overflow: hidden;
+  resize: none;
+}
+
+/* Edit button animations */
+.edit-button-enter {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal backdrop */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 9998;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Modal container */
+.modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal content */
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Save indicator fade out */
+.save-indicator-fade {
+  animation: saveIndicatorFade 3s ease-in-out;
+}
+
+@keyframes saveIndicatorFade {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Character counter */
+.character-counter {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  margin-top: 4px;
+}
+
+.character-counter.warning {
+  color: #f59e0b;
+}
+
+.character-counter.error {
+  color: #ef4444;
+}
+
+/* Validation error */
+.validation-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  backdrop-filter: blur(2px);
+}
+
+/* Inline form field */
+.inline-form-field {
+  margin-bottom: 16px;
+}
+
+.inline-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.inline-form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #111827;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.inline-form-input::placeholder {
+  color: #6b7280;
+}
+
+.inline-form-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.inline-form-input.error {
+  border-color: #ef4444;
+}
+
+/* Select dropdown specific styling */
+.inline-form-input select,
+select.inline-form-input {
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 20px;
+  padding-right: 40px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font-weight: 500;
+}
+
+.inline-form-input select:hover,
+select.inline-form-input:hover {
+  border-color: #9ca3af;
+}
+
+.inline-form-input select:focus,
+select.inline-form-input:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+}
+
+.inline-form-input option,
+select.inline-form-input option {
+  color: #111827;
+  background-color: white;
+  padding: 10px;
+  font-weight: 400;
+}
+
+/* Special styling for placeholder option */
+.inline-form-input option[value=""],
+select.inline-form-input option[value=""] {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Tab navigation */
+.tab-nav {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 12px 24px;
+  font-weight: 500;
+  color: #374151;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+.tab-button:hover {
+  color: #111827;
+}
+
+.tab-button.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+/* Action buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: white;
+  color: #111827;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Image upload preview */
+.image-upload-preview {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.image-upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  color: #111827;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.image-upload-button:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  color: #3b82f6;
+}
+
+/* Progress bar */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  transition: width 0.3s ease-out;
+  animation: progressShimmer 1.5s infinite;
+}
+
+@keyframes progressShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Mobile responsive - Add spacing around modals */
+@media (max-width: 768px) {
+  /* Modal container - add padding on mobile for spacing */
+  .modal-container {
+    padding: 16px;
+  }
+
+  /* Modal content - with border radius and proper spacing */
+  .modal-content {
+    max-width: 100%;
+    max-height: calc(100vh - 32px);
+    border-radius: 12px;
+    margin: 0;
+  }
+
+  /* Remove side padding on mobile for inline editors */
+  .inline-editor-mobile-full {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Inline editors - reduce padding on mobile */
+  .inline-textarea-editor,
+  .inline-text-editor {
+    padding: 8px;
+  }
+
+  /* Tab buttons - smaller on mobile */
+  .tab-button {
+    padding: 10px 16px;
+    font-size: 0.875rem;
+  }
+
+  /* Action buttons - stack on mobile */
+  .action-buttons {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .action-buttons button {
+    width: 100%;
+  }
+
+  /* Form inputs - adjust for mobile */
+  .inline-form-input {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  /* Character counter - smaller on mobile */
+  .character-counter {
+    font-size: 0.7rem;
+  }
+}
+
+/* Dashboard Navbar positioning - Mobile */
+@media (max-width: 767px) {
+  .dashboard-navbar {
+    /* Center navbar on mobile (no sidebar) */
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* Dashboard Navbar positioning - Desktop */
+@media (min-width: 768px) {
+  .dashboard-navbar {
+    /* Center navbar within the content area (after sidebar) */
+    /* Sidebar expanded: 288px (w-72), collapsed: 64px (w-16) */
+    /* Using CSS custom property set by dashboard layout */
+    /* Fallback: assume sidebar expanded (288px = 18rem) */
+    --sidebar-width: 288px;
+    left: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2);
+    transform: translateX(-50%);
+  }
+
+  /* Collapsed sidebar state */
+  .sidebar-collapsed .dashboard-navbar {
+    --sidebar-width: 64px;
+  }
+}
+
+/* Dashboard Music Circle positioning - Desktop only */
+@media (min-width: 768px) {
+  .dashboard-music-circle {
+    /* Position music circle inside the invitation preview area (right side) */
+    /* Sidebar expanded: 288px (w-72) */
+    /* Invitation container: max-width 480px, centered in content area */
+    /* Music circle (48px) should be inside invitation with padding */
+    --sidebar-width: 288px;
+    --content-center: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2);
+    /* Position: center + half-invitation - circle-width - padding */
+    /* 240px - 48px - 16px = 176px from center */
+    right: auto;
+    left: calc(var(--content-center) + 176px);
+  }
+
+  /* Collapsed sidebar state for music circle */
+  .sidebar-collapsed .dashboard-music-circle {
+    --sidebar-width: 64px;
+    --content-center: calc(var(--sidebar-width) + (100vw - var(--sidebar-width)) / 2);
+    left: calc(var(--content-center) + 176px);
+  }
+}
+
+/* Mobile - Music circle stays on the right */
+@media (max-width: 767px) {
+  .dashboard-music-circle {
+    right: 16px;
+  }
+}
+
+/* ========================================
+   DASHBOARD INVITATION PREVIEW STYLES
+   ======================================== */
+
+/* Dashboard mobile-container styling (for edit preview) */
+@media (min-width: 768px) {
+  /* Theme desktop background for dashboard */
+  [class*="theme-"] .theme-desktop-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -1;
+  }
+
+  /* Mobile container centered in dashboard */
+  .mobile-container {
+    position: relative;
+    z-index: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: white;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (max-width: 767px) {
+  .mobile-container {
+    width: 100%;
+    min-height: 100vh;
+  }
+}

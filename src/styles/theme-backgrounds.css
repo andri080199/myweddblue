@@ -1,0 +1,118 @@
+/* ========================================
+   THEME BACKGROUND GRADIENTS
+   Only for tablet view (768px - 1023px)
+   Desktop uses split view with Tailwind CSS
+   Mobile shows full-width invitation
+   ======================================== */
+
+/* Desktop background wrapper - only visible on tablet */
+.theme-desktop-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: -1;
+  transition: background 0.3s ease;
+}
+
+/* Original Theme - Blue gradient */
+.theme-original .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #3295c5 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #3295c5 0%, transparent 50%),
+    linear-gradient(135deg, #9fd1ea 0%, #e5f1f9 50%, #9fd1ea 100%);
+}
+
+/* Romantic Theme - Pink gradient */
+.theme-romantic .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #EC4899 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #EC4899 0%, transparent 50%),
+    linear-gradient(135deg, #FDF2F8 0%, #FEF7F0 30%, #F9A8D4 70%, #FDF2F8 100%);
+}
+
+/* Vintage Theme - Earth tone gradient */
+.theme-vintage .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #A0753C 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #A0753C 0%, transparent 50%),
+    linear-gradient(135deg, #F7F3E9 0%, #FAF7F1 30%, #DDD6C7 70%, #F7F3E9 100%);
+}
+
+/* Classic Theme - Elegant gradient */
+.theme-classic .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #8B4513 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #8B4513 0%, transparent 50%),
+    linear-gradient(135deg, #F5EFE7 0%, #FEFCF3 30%, #D4AF37 70%, #F5EFE7 100%);
+}
+
+/* Modern Theme - Contemporary gradient */
+.theme-modern .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #1E293B 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #1E293B 0%, transparent 50%),
+    linear-gradient(135deg, #F8FAFC 0%, #FFFFFF 30%, #E2E8F0 70%, #F8FAFC 100%);
+}
+
+/* Emerald Theme - Green gradient */
+.theme-emerald .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #047857 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #047857 0%, transparent 50%),
+    linear-gradient(135deg, #A7F3D0 0%, #ECFDF5 30%, #6EE7B7 70%, #A7F3D0 100%);
+}
+
+/* Sunset Theme - Orange gradient */
+.theme-sunset .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #EA580C 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #EA580C 0%, transparent 50%),
+    linear-gradient(135deg, #FED7AA 0%, #FFF7ED 30%, #FDBA74 70%, #FED7AA 100%);
+}
+
+/* Lavender Theme - Purple gradient */
+.theme-lavender .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #7C3AED 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #7C3AED 0%, transparent 50%),
+    linear-gradient(135deg, #E9D5FF 0%, #FAF5FF 30%, #DDD6FE 70%, #E9D5FF 100%);
+}
+
+/* Coral Theme - Red gradient */
+.theme-coral .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #DC2626 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #DC2626 0%, transparent 50%),
+    linear-gradient(135deg, #FED7D7 0%, #FFFAFA 30%, #FECACA 70%, #FED7D7 100%);
+}
+
+/* Sapphire Theme - Blue gradient */
+.theme-sapphire .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #1E40AF 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #1E40AF 0%, transparent 50%),
+    linear-gradient(135deg, #DBEAFE 0%, #F8FAFC 30%, #BFDBFE 70%, #DBEAFE 100%);
+}
+
+/* City Theme - Same as original blue gradient */
+.theme-city .theme-desktop-bg {
+  background:
+    radial-gradient(circle at top left, #3295c5 0%, transparent 50%),
+    radial-gradient(circle at bottom right, #3295c5 0%, transparent 50%),
+    linear-gradient(135deg, #9fd1ea 0%, #e5f1f9 50%, #9fd1ea 100%);
+}
+
+/* Hide theme background on mobile and desktop (only show on tablet) */
+@media (max-width: 767px) {
+  .theme-desktop-bg {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .theme-desktop-bg {
+    display: none;
+  }
+}

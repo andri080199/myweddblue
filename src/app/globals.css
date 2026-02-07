@@ -13,11 +13,29 @@
 :root {
   --background: #ffffff;
   --foreground: #213555;
-  --primary: #9fd1ea;
-  --textprimary: #1d6087;
-  --darkprimary:#3295c5;
-  --primarylight: #e5f1f9;
-  --gold: #705a23;
+
+  /* Theme Variables - will be overridden by ThemeProvider */
+  --color-primary: #9fd1ea;
+  --color-primarylight: #e5f1f9;
+  --color-darkprimary: #3295c5;
+  --color-textprimary: #1d6087;
+  --color-gold: #705a23;
+  --color-lightblue: #e5f1f9;
+  --color-secondary: #9fd1ea;
+  --color-accent: #705a23;
+
+  /* Typography Variables */
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Merienda', cursive;
+  --font-heading: 'Lavishly Yours', cursive;
+  --font-script: 'Dancing Script', cursive;
+
+  /* Legacy variables for backward compatibility */
+  --primary: var(--color-primary);
+  --textprimary: var(--color-textprimary);
+  --darkprimary: var(--color-darkprimary);
+  --primarylight: var(--color-primarylight);
+  --gold: var(--color-gold);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,10 +46,112 @@
 }
 
 html {
-  scroll-behavior: smooth; /* Membuat scrolling lebih halus */
+  scroll-behavior: smooth;
+  /* Membuat scrolling lebih halus */
 }
+
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Toast Animation */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Modal Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+
+/* Custom Scrollbar - General */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 20px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* Sidebar Specific Scrollbar (Dark Theme) */
+/* Sidebar Specific Scrollbar (Dark Theme) */
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(189, 232, 245, 0.2) !important;
+  /* Light Blue transparent */
+  border-radius: 20px !important;
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(189, 232, 245, 0.5) !important;
+  /* Light Blue more opaque */
+}
+
+/* Firefox Support */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.sidebar-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(189, 232, 245, 0.2) transparent;
 }

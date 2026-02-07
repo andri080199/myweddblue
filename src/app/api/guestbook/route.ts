@@ -1,9 +1,24 @@
-import { NextResponse } from "next/server";
-import getDBConnection from "@/utils/db";
+import { NextRequest, NextResponse } from "next/server";
+import masterDB, { getClientId } from "@/utils/db";
 
-export async function POST(req: Request) {
+// POST: Tambah entri ke guestbook
+export async function POST(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const clientSlug = searchParams.get('clientSlug');
+
+    if (!clientSlug) {
+      return NextResponse.json({ message: "Client slug is required" }, { status: 400 });
+    }
+
     const { name, message } = await req.json();
+
+    // Get client_id from slug (unified database system)
+    const clientId = await getClientId(clientSlug);
+
+    if (!clientId) {
+      return NextResponse.json({ message: "Client not found" }, { status: 404 });
+    }
 
     if (!name || !message) {
       return NextResponse.json(
@@ -13,19 +28,14 @@ export async function POST(req: Request) {
     }
 
     const timestamp = new Date().toISOString();
-    const db = await getDBConnection();
-    
-    const result = await db.run(
-      "INSERT INTO guestbook (name, message, timestamp) VALUES (?, ?, ?)",
-      [name, message, timestamp]
+
+    // Insert into unified guestbook table with client_id
+    const result = await masterDB.query(
+      `INSERT INTO guestbook (client_id, name, message, timestamp) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [clientId, name, message, timestamp]
     );
 
-    return NextResponse.json({
-      id: result.lastID,
-      name,
-      message,
-      timestamp,
-    });
+    return NextResponse.json(result.rows[0]);
   } catch (error) {
     console.error("Error in POST:", error);
     return NextResponse.json(
@@ -35,12 +45,30 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+// GET: Ambil semua entri guestbook
+export async function GET(req: NextRequest) {
   try {
-    const db = await getDBConnection();
-    const guestbookEntries = await db.all("SELECT * FROM guestbook ORDER BY timestamp DESC");
+    const { searchParams } = new URL(req.url);
+    const clientSlug = searchParams.get('clientSlug');
 
-    return NextResponse.json(guestbookEntries);
+    if (!clientSlug) {
+      return NextResponse.json({ message: "Client slug is required" }, { status: 400 });
+    }
+
+    // Get client_id from slug (unified database system)
+    const clientId = await getClientId(clientSlug);
+
+    if (!clientId) {
+      return NextResponse.json({ message: "Client not found" }, { status: 404 });
+    }
+
+    // Query unified guestbook table filtered by client_id
+    const result = await masterDB.query(
+      `SELECT * FROM guestbook WHERE client_id = $1 ORDER BY timestamp DESC`,
+      [clientId]
+    );
+
+    return NextResponse.json(result.rows);
   } catch (error) {
     console.error("Error in GET:", error);
     return NextResponse.json(

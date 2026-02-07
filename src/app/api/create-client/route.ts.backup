@@ -1,0 +1,191 @@
+import { NextRequest, NextResponse } from 'next/server';
+import masterDB from '@/utils/db';
+
+// Helper function to ensure password column exists
+async function ensurePasswordColumn() {
+  try {
+    await masterDB.query(`
+      ALTER TABLE clients
+      ADD COLUMN IF NOT EXISTS password VARCHAR(255) DEFAULT 'client123'
+    `);
+  } catch (error) {
+    // Column might already exist, ignore error
+    console.log('Password column check:', error);
+  }
+}
+
+// Generate random 4-character alphanumeric suffix
+function generateRandomSuffix(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 4; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Generate unique slug by appending random suffix if duplicate exists
+async function generateUniqueSlug(baseSlug: string): Promise<string> {
+  // First, check if the base slug is available
+  const existingClient = await masterDB.query(
+    'SELECT id FROM clients WHERE slug = $1',
+    [baseSlug]
+  );
+
+  if (existingClient.rows.length === 0) {
+    // Base slug is available, use it
+    return baseSlug;
+  }
+
+  // Base slug exists, generate unique slug with random suffix
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  while (attempts < maxAttempts) {
+    const suffix = generateRandomSuffix();
+    const uniqueSlug = `${baseSlug}-${suffix}`;
+
+    const checkUnique = await masterDB.query(
+      'SELECT id FROM clients WHERE slug = $1',
+      [uniqueSlug]
+    );
+
+    if (checkUnique.rows.length === 0) {
+      return uniqueSlug;
+    }
+
+    attempts++;
+  }
+
+  // Fallback: use timestamp if all attempts fail
+  return `${baseSlug}-${Date.now().toString(36).slice(-4)}`;
+}
+
+export async function POST(req: NextRequest) {
+  const {
+    slug,
+    theme, // Legacy: bundled theme
+    colorTheme, // New: separate color theme
+    backgroundTheme, // New: separate background theme
+    password = 'client123'
+  } = await req.json();
+
+  if (!slug) {
+    return NextResponse.json({ success: false, message: 'Slug is required' }, { status: 400 });
+  }
+
+  try {
+    // Ensure password column exists before inserting
+    await ensurePasswordColumn();
+
+    // Generate unique slug (adds suffix if duplicate)
+    const finalSlug = await generateUniqueSlug(slug);
+    const dbName = `client_${finalSlug.replace(/-/g, '_')}_db`;
+
+    // 1. Buat database baru untuk client
+    console.log(`🔨 Creating database: ${dbName}`);
+    await masterDB.query(`CREATE DATABASE ${dbName}`);
+
+    // 2. Setup tabel di database client yang baru
+    const { Pool } = require('pg');
+    const clientDB = new Pool({
+      connectionString: process.env.DATABASE_URL?.replace(/\/[^/]*$/, `/${dbName}`),
+    });
+
+    // Buat tabel-tabel yang dibutuhkan
+    await clientDB.query(`
+      CREATE TABLE IF NOT EXISTS rsvp (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        isattending BOOLEAN NOT NULL,
+        responsedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await clientDB.query(`
+      CREATE TABLE IF NOT EXISTS guestbook (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await clientDB.query(`
+      CREATE TABLE IF NOT EXISTS guest_names (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        url VARCHAR(500),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await clientDB.query(`
+      CREATE TABLE IF NOT EXISTS client_content (
+        id SERIAL PRIMARY KEY,
+        content_type VARCHAR(100) NOT NULL,
+        content_data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(content_type)
+      )
+    `);
+
+    await clientDB.query(`
+      CREATE TABLE IF NOT EXISTS client_gallery (
+        id SERIAL PRIMARY KEY,
+        image_url TEXT NOT NULL,
+        image_order INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    await clientDB.end();
+
+    // 3. Simpan client di master database
+    // NEW SYSTEM: Always use color_theme + background_theme if provided
+    if (colorTheme && backgroundTheme) {
+      await masterDB.query(
+        'INSERT INTO clients (slug, db_name, color_theme, background_theme, password) VALUES ($1, $2, $3, $4, $5)',
+        [finalSlug, dbName, colorTheme, backgroundTheme, password]
+      );
+      console.log(`✅ Client ${finalSlug} created with NEW system: ${colorTheme} + ${backgroundTheme}`);
+    }
+    // LEGACY SYSTEM: Use theme + optional background_theme
+    else if (theme) {
+      if (backgroundTheme && backgroundTheme !== 'original') {
+        await masterDB.query(
+          'INSERT INTO clients (slug, db_name, theme, background_theme, password) VALUES ($1, $2, $3, $4, $5)',
+          [finalSlug, dbName, theme, backgroundTheme, password]
+        );
+        console.log(`✅ Client ${finalSlug} created with LEGACY system: ${theme} + ${backgroundTheme}`);
+      } else {
+        await masterDB.query(
+          'INSERT INTO clients (slug, db_name, theme, password) VALUES ($1, $2, $3, $4)',
+          [finalSlug, dbName, theme, password]
+        );
+        console.log(`✅ Client ${finalSlug} created with LEGACY theme: ${theme}`);
+      }
+    }
+    // FALLBACK: Default to original
+    else {
+      await masterDB.query(
+        'INSERT INTO clients (slug, db_name, color_theme, background_theme, password) VALUES ($1, $2, $3, $4, $5)',
+        [finalSlug, dbName, 'original', 'original', password]
+      );
+      console.log(`✅ Client ${finalSlug} created with DEFAULT: original + original`);
+    }
+
+    // Return success with the final slug (may differ from input if suffix was added)
+    return NextResponse.json({
+      success: true,
+      slug: finalSlug,
+      wasModified: finalSlug !== slug // Indicate if slug was modified
+    });
+  } catch (error: unknown) {
+    console.error('Error creating client:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    return NextResponse.json({ success: false, message }, { status: 500 });
+  }
+}

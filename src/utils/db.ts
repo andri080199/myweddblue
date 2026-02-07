@@ -1,47 +1,30 @@
-import sqlite3 from "sqlite3";
-import { open } from "sqlite";
+// utils/db.ts
+import { Pool } from "pg";
 
-const getDBConnection = async () => {
-  return open({
-    filename: "./database/database.db", 
-    driver: sqlite3.Database,
-  });
-};
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-// Inisialisasi tabel jika belum ada
-const initDB = async () => {
-  const db = await getDBConnection();
+export default pool;
 
-  // Buat tabel guestbook jika belum ada
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS guestbook (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      message TEXT NOT NULL,
-      timestamp TEXT NOT NULL
-    )
-  `);
+/**
+ * Get client ID from slug
+ * Helper function for unified database system
+ */
+export async function getClientId(slug: string): Promise<number | null> {
+  try {
+    const result = await pool.query(
+      'SELECT id FROM clients WHERE slug = $1',
+      [slug]
+    );
 
-  // Buat tabel RSVP jika belum ada
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS rsvp (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      isAttending BOOLEAN NOT NULL,
-      responseDate TEXT NOT NULL
-    )
-  `);
+    if (result.rows.length === 0) {
+      return null;
+    }
 
-await db.exec(`
-  CREATE TABLE IF NOT EXISTS guest_names (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    url TEXT NOT NULL
-  )
-`);
-
-};
-
-initDB().catch((err) => console.error("Database init error:", err));
-
-export default getDBConnection;
+    return result.rows[0].id;
+  } catch (error) {
+    console.error('Error getting client ID:', error);
+    return null;
+  }
+}

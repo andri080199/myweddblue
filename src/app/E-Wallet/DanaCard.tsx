@@ -43,14 +43,14 @@ const DanaCard: React.FC = () => {
       {/* Nomor Rekening */}
       <div className="mb-2 pt-8 ml-2">
         {/* <p className="text-sm font-semibold text-darkprimary">Nomor Rekening:</p> */}
-        <p className="text-lg font-bold text-gold font-mono text-left tracking-wider">{rekening}</p>
+        <p className="text-lg font-bold bg-gradient-to-r from-yellow-600 to-yellow-800 bg-clip-text text-transparent font-mono text-left tracking-wider leading-relaxed">{rekening}</p>
       </div>
 
       {/* Tombol Salin Nomor Rekening */}
       <div className="relative w-full h-16">
         <button
           onClick={handleCopy}
-          className="absolute bottom-2 -right-2 px-4 py-2 bg-primary rounded-lg text-gold hover:scale-105 shadow-md shadow-darkprimary font-semibold text-sm"
+          className="absolute bottom-2 -right-2 px-4 py-2 bg-primary rounded-lg bg-gradient-to-r from-yellow-600 to-yellow-800 bg-clip-text text-transparent hover:scale-105 shadow-md shadow-darkprimary font-semibold text-sm leading-relaxed"
         >
           {isCopied ? "Berhasil Disalin" : "Salin No. Dana"}
         </button>

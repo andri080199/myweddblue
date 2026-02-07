@@ -1,87 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
-import getDBConnection from "@/utils/db"; // Import koneksi database
+import masterDB, { getClientId } from "@/utils/db";
 
-// **GET: Ambil semua tamu**
-export async function GET() {
-  try {
-    const db = await getDBConnection();
-    const guests = await db.all("SELECT * FROM guest_names");
-
-    return NextResponse.json(guests);
-  } catch (error) {
-    console.error("Gagal mengambil data tamu:", error);
-    return NextResponse.json(
-      { message: "Gagal mengambil data tamu" },
-      { status: 500 }
-    );
-  }
-}
-
-// **POST: Tambah tamu baru**
-export async function POST(req: NextRequest) {
-  try {
-    const { guestName } = await req.json();
-
-    if (!guestName) {
-      return NextResponse.json(
-        { message: "Nama tamu harus diisi" },
-        { status: 400 }
-      );
-    }
-
-    const url = `/themes/tema01/${encodeURIComponent(guestName)}`;
-    const db = await getDBConnection();
-    const result = await db.run(
-      "INSERT INTO guest_names (name, url) VALUES (?, ?)",
-      guestName,
-      url
-    );
-
-    const newGuest = {
-      id: result.lastID,
-      name: guestName,
-      url,
-    };
-
-    return NextResponse.json(newGuest);
-  } catch (error) {
-    console.error("Gagal menambah tamu:", error);
-    return NextResponse.json(
-      { message: "Gagal menambah tamu" },
-      { status: 500 }
-    );
-  }
-}
-
-// **DELETE: Hapus tamu berdasarkan ID**
-export async function DELETE(req: NextRequest) {
+// GET
+export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const guestId = searchParams.get("guestId");
+    const clientSlug = searchParams.get('clientSlug');
 
-    if (!guestId) {
-      return NextResponse.json(
-        { message: "ID tamu tidak ditemukan" },
-        { status: 400 }
-      );
+    if (!clientSlug) {
+      return NextResponse.json({ message: "Client slug is required" }, { status: 400 });
     }
 
-    const db = await getDBConnection();
-    const result = await db.run("DELETE FROM guest_names WHERE id = ?", guestId);
+    // Get client_id from slug (unified database system)
+    const clientId = await getClientId(clientSlug);
 
-    if (result.changes === 0) {
-      return NextResponse.json(
-        { message: "Tamu tidak ditemukan" },
-        { status: 404 }
-      );
+    if (!clientId) {
+      return NextResponse.json({ message: "Client not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Tamu berhasil dihapus" });
-  } catch (error) {
-    console.error("Gagal menghapus tamu:", error);
-    return NextResponse.json(
-      { message: "Gagal menghapus tamu" },
-      { status: 500 }
+    const result = await masterDB.query(
+      `SELECT * FROM guest_names WHERE client_id = $1 ORDER BY id DESC`,
+      [clientId]
     );
+    return NextResponse.json(result.rows);
+  } catch (error) {
+    console.error("Gagal mengambil data tamu:", error);
+    return NextResponse.json({ message: "Gagal mengambil data tamu" }, { status: 500 });
+  }
+}
+
+// POST
+export async function POST(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const clientSlug = searchParams.get('clientSlug');
+
+    if (!clientSlug) {
+      return NextResponse.json({ message: "Client slug is required" }, { status: 400 });
+    }
+
+    const guests = await req.json();
+
+    // Get client_id from slug (unified database system)
+    const clientId = await getClientId(clientSlug);
+
+    if (!clientId) {
+      return NextResponse.json({ message: "Client not found" }, { status: 404 });
+    }
+
+    if (!Array.isArray(guests) || guests.length === 0) {
+      return NextResponse.json({ message: "Data tamu tidak valid" }, { status: 400 });
+    }
+
+    const values = guests
+      .filter(g => g.guestName && g.guestName.trim() !== "")
+      .map(g => [clientId, g.guestName.trim(), '', `/undangan/${clientSlug}/${encodeURIComponent(g.guestName.trim())}`]);
+
+    if (values.length === 0) {
+      return NextResponse.json({ message: "Tidak ada data valid untuk ditambahkan" }, { status: 400 });
+    }
+
+    const queryText = `
+      INSERT INTO guest_names (client_id, name, phone, url)
+      VALUES ${values.map((_, i) => `($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4})`).join(", ")}
+      RETURNING *;
+    `;
+
+    const flatValues = values.flat();
+    const result = await masterDB.query(queryText, flatValues);
+
+    return NextResponse.json({
+      message: `${result.rowCount} tamu berhasil ditambahkan`,
+      data: result.rows
+    });
+  } catch (error) {
+    console.error("Gagal menambahkan tamu:", error);
+    return NextResponse.json({ message: "Gagal menambah tamu" }, { status: 500 });
   }
 }
