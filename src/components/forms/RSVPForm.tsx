@@ -3,19 +3,18 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import ScrollReveal from "../ui/ScrollReveal";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "../wedding/OrnamentLayer";
 
 interface RSVPFormProps {
   clientSlug: string;
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const RSVPForm: React.FC<RSVPFormProps> = ({ clientSlug, customBackground, templateId }) => {
+const RSVPForm: React.FC<RSVPFormProps> = ({ clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
-  const backgroundImage = customBackground || theme.images.background;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('rsvp') || theme.images.background;
   const [name, setName] = useState<string>("");
   const [isAttending, setIsAttending] = useState<boolean | null>(null);
   const [statusMessage, setStatusMessage] = useState<string>("");
@@ -67,7 +66,7 @@ const RSVPForm: React.FC<RSVPFormProps> = ({ clientSlug, customBackground, templ
           fill
           style={{ objectFit: 'cover' }}
           quality={100}
-          unoptimized={customBackground?.startsWith('data:')}
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
       </div>
 

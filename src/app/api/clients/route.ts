@@ -15,10 +15,7 @@ export async function GET(req: NextRequest) {
           slug,
           slug as name,
           '' as email,
-          theme,
-          color_theme,
-          background_theme,
-          catalog_template_id,
+          unified_theme_id,
           created_at
         FROM clients
         WHERE slug = $1
@@ -38,10 +35,7 @@ export async function GET(req: NextRequest) {
         slug,
         slug as name,
         '' as email,
-        theme,
-        color_theme,
-        background_theme,
-        catalog_template_id,
+        unified_theme_id,
         created_at
       FROM clients
       ORDER BY created_at DESC

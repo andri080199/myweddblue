@@ -207,6 +207,57 @@ export default function AdminDashboard() {
           />
         </div>
 
+        {/* Quick Actions Section */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-[#0F2854] mb-4 px-2">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Link
+              href="/admin/create-client"
+              className="bg-white rounded-2xl p-6 border border-[#1C4D8D]/10 hover:border-[#1C4D8D]/30 hover:shadow-lg transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-50 rounded-xl">
+                  <Users className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#0F2854] group-hover:text-blue-600 transition-colors">Create Client</h3>
+                  <p className="text-xs text-[#1C4D8D]/60">Buat undangan baru</p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/theme-backgrounds"
+              className="bg-white rounded-2xl p-6 border border-[#1C4D8D]/10 hover:border-[#1C4D8D]/30 hover:shadow-lg transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-50 rounded-xl">
+                  <Palette className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#0F2854] group-hover:text-purple-600 transition-colors">Manage Themes</h3>
+                  <p className="text-xs text-[#1C4D8D]/60">Kelola tema undangan</p>
+                </div>
+              </div>
+            </Link>
+
+            <Link
+              href="/admin/ornament-library"
+              className="bg-white rounded-2xl p-6 border border-[#1C4D8D]/10 hover:border-[#1C4D8D]/30 hover:shadow-lg transition-all group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-pink-50 rounded-xl">
+                  <LayoutDashboard className="w-6 h-6 text-pink-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#0F2854] group-hover:text-pink-600 transition-colors">Ornament Library</h3>
+                  <p className="text-xs text-[#1C4D8D]/60">Kelola ornament reusable</p>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
         {/* Recent Clients Section */}
         <div className="bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(28,77,141,0.1)] border border-[#1C4D8D]/10 overflow-hidden">
           

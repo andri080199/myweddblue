@@ -4,18 +4,18 @@ import ScrollReveal from "../ui/ScrollReveal";
 import { extractNamesFromSlug } from "@/utils/extractNamesFromSlug";
 import { Heart, Sparkles, Users } from "lucide-react";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from '@/hooks/useTemplateOrnaments';
+import { useUnifiedTheme } from '@/hooks/useUnifiedTheme';
 import OrnamentLayer from '../wedding/OrnamentLayer';
 
 interface FooterProps {
   clientSlug: string;
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const Footer: React.FC<FooterProps> = ({ clientSlug, customBackground, templateId }) => {
+const Footer: React.FC<FooterProps> = ({ clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('footer') || theme.images.hero;
   // Extract names from clientSlug
   const { groomName, brideName } = extractNamesFromSlug(clientSlug);
   
@@ -30,16 +30,17 @@ const Footer: React.FC<FooterProps> = ({ clientSlug, customBackground, templateI
   };
 
   return (
-    <footer className="relative text-gray-800 overflow-hidden min-h-screen flex items-center justify-center">
+    <footer id="footer" className="relative text-gray-800 overflow-hidden min-h-screen flex items-center justify-center">
       {/* Beautiful Elegant Background */}
       <div className="absolute inset-0 z-0">
         <Image
-          src={customBackground || theme.images.hero}
+          src={backgroundImage}
           alt="Wedding Background"
           fill
           style={{ objectFit: 'cover' }}
           quality={100}
           className=""
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
         {/* Overlay agar teks lebih terbaca */}
         <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px]"></div>

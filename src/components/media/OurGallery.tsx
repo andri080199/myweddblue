@@ -4,21 +4,20 @@ import Image from 'next/image';
 import ScrollReveal from '../ui/ScrollReveal';
 import { Camera, Sparkles, Play } from 'lucide-react';
 import { useThemeContext } from '@/contexts/ThemeContext';
-import { useTemplateOrnaments } from '@/hooks/useTemplateOrnaments';
+import { useUnifiedTheme } from '@/hooks/useUnifiedTheme';
 import OrnamentLayer from '../wedding/OrnamentLayer';
 
 interface OurGalleryProps {
   galleryPhotos?: any[];
   youtubeUrl?: string;
-  customBackground?: string;
   clientSlug: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const OurGallery: React.FC<OurGalleryProps> = ({ galleryPhotos = [], youtubeUrl, customBackground, clientSlug, templateId }) => {
+const OurGallery: React.FC<OurGalleryProps> = ({ galleryPhotos = [], youtubeUrl, clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
-  const backgroundImage = customBackground || theme.images.background;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('gallery') || theme.images.background;
   // Function to extract video ID from YouTube URL
   const getYouTubeVideoId = (url: string): string | null => {
     if (!url) return null;
@@ -31,7 +30,7 @@ const OurGallery: React.FC<OurGalleryProps> = ({ galleryPhotos = [], youtubeUrl,
 
   const videoId = getYouTubeVideoId(youtubeUrl || '');
     return (
-        <div id='gallery' className='relative'>
+        <div id='gallery' className='relative overflow-hidden'>
           {/* Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -40,7 +39,7 @@ const OurGallery: React.FC<OurGalleryProps> = ({ galleryPhotos = [], youtubeUrl,
               fill
               style={{ objectFit: 'cover' }}
               quality={100}
-              unoptimized={customBackground?.startsWith('data:')}
+              unoptimized={backgroundImage?.startsWith('data:')}
             />
           </div>
           <ScrollReveal>

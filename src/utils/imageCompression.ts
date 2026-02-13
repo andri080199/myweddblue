@@ -7,6 +7,7 @@ export interface CompressionOptions {
   maxSizeMB?: number;        // Max output size in MB (default: 15)
   quality?: number;          // Image quality 0-1 (default: 0.9 = 90%)
   maxWidthOrHeight?: number; // Max dimension in pixels (default: keep original)
+  preserveTransparency?: boolean; // Use PNG to preserve transparency (default: false, uses JPEG)
 }
 
 /**
@@ -23,6 +24,7 @@ export async function compressImage(
     maxSizeMB = 15,
     quality = 0.9,
     maxWidthOrHeight,
+    preserveTransparency = false,
   } = options;
 
   console.log(`🔄 [Compression] Starting compression for ${file.name} (${formatFileSize(file.size)})`);
@@ -67,14 +69,18 @@ export async function compressImage(
             return;
           }
 
-          // Draw image to canvas with white background (for transparency)
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, width, height);
+          // Choose output format based on transparency needs
+          const outputFormat = preserveTransparency ? 'image/png' : 'image/jpeg';
+
+          // Only fill white background if NOT preserving transparency (JPEG needs it)
+          if (!preserveTransparency) {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, width, height);
+          }
+
           ctx.drawImage(img, 0, 0, width, height);
 
-          // IMPORTANT: Always use JPEG for compression (PNG doesn't support quality parameter)
-          const outputFormat = 'image/jpeg';
-          console.log(`🎨 [Compression] Output format: ${outputFormat}, Quality: ${quality * 100}%`);
+          console.log(`🎨 [Compression] Output format: ${outputFormat}, Quality: ${quality * 100}%, Preserve Transparency: ${preserveTransparency}`);
 
           // Convert canvas to blob with compression
           canvas.toBlob(

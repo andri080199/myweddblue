@@ -5,7 +5,7 @@ import Image from 'next/image';
 import ScrollReveal from '../ui/ScrollReveal';
 import { Heart, Sparkles, Calendar } from 'lucide-react';
 import { useThemeContext } from '@/contexts/ThemeContext';
-import { useTemplateOrnaments } from '@/hooks/useTemplateOrnaments';
+import { useUnifiedTheme } from '@/hooks/useUnifiedTheme';
 import OrnamentLayer from './OrnamentLayer';
 
 interface WeddingEventProps {
@@ -24,15 +24,14 @@ interface WeddingEventProps {
     address?: string;
     mapsLink?: string;
   };
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
 // Komponen WeddingEvent dengan TypeScript
-const WeddingEvent: React.FC<WeddingEventProps> = ({ clientSlug, akadInfo, resepsiInfo, customBackground, templateId }) => {
+const WeddingEvent: React.FC<WeddingEventProps> = ({ clientSlug, akadInfo, resepsiInfo, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
-  const backgroundImage = customBackground || theme.images.hero;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('event') || theme.images.hero;
   return (
     <div id='event' className="relative w-full h-full pt-8 pb-12 bg-gradient-to-tr from-primary to-primarylight">
       {/* Header Section - Fixed positioning */}
@@ -89,7 +88,7 @@ const WeddingEvent: React.FC<WeddingEventProps> = ({ clientSlug, akadInfo, resep
           fill
           style={{ objectFit: 'cover' }}
           quality={100}
-          unoptimized={customBackground?.startsWith('data:')}
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
         {/* <div className="absolute inset-0 bg-primarylight opacity-60"></div> */}
       </div>
@@ -125,7 +124,7 @@ const WeddingEvent: React.FC<WeddingEventProps> = ({ clientSlug, akadInfo, resep
       </div>
 
       {/* Ornament Layer - Decorative elements */}
-      <OrnamentLayer ornaments={getOrnaments('event')} />
+      <OrnamentLayer ornaments={getOrnaments('wedding-event')} />
     </div>
   );
 };

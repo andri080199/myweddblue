@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from 'next/server';
 import masterDB from '@/utils/db';
 
 /**
+ * Validate animation configuration
+ */
+function validateAnimation(animation?: any): boolean {
+  if (!animation) return true; // Optional field
+
+  const validTypes = ['none', 'sway', 'float', 'rotate', 'pulse', 'bounce', 'sway-float', 'rotate-float'];
+  const validSpeeds = ['slow', 'normal', 'fast'];
+
+  if (animation.type && !validTypes.includes(animation.type)) return false;
+  if (animation.speed && !validSpeeds.includes(animation.speed)) return false;
+  if (animation.intensity != null && (animation.intensity < 0.1 || animation.intensity > 1)) return false;
+  if (animation.delay != null && (animation.delay < 0 || animation.delay > 5)) return false;
+
+  return true;
+}
+
+/**
  * GET /api/unified-themes/ornaments?themeId=xxx
  *
  * Fetch ornaments for a specific unified theme
@@ -83,6 +100,17 @@ export async function POST(request: NextRequest) {
           {
             success: false,
             error: 'Each ornament must have id, section, and image fields'
+          },
+          { status: 400 }
+        );
+      }
+
+      // Validate animation configuration if present
+      if (!validateAnimation(ornament.animation)) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid animation configuration'
           },
           { status: 400 }
         );

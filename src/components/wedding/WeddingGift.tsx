@@ -4,19 +4,18 @@ import Image from "next/image";
 import ScrollReveal from "../ui/ScrollReveal";
 import Gift from "../interactive/Gift";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "./OrnamentLayer";
 
 interface WeddingGiftProps {
   clientSlug: string;
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground, templateId }) => {
+const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
-  const backgroundImage = customBackground || theme.images.background;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('gift') || theme.images.background;
   const [giftData, setGiftData] = useState<any>(null);
   const [addressData, setAddressData] = useState<any>(null);
   const [settings, setSettings] = useState<any>(null);
@@ -28,12 +27,8 @@ const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground,
 
   // --- DATA FETCHING (SAMA SEPERTI SEBELUMNYA) ---
   useEffect(() => {
-    if (clientSlug) {
-      fetchGiftData();
-      fetchAddressData();
-      fetchSettings();
-      fetchGiftVisibility();
-    } else {
+    // For preview mode or no clientSlug, use default data
+    if (!clientSlug || clientSlug === 'preview') {
       setGiftData({
         bankType1: 'BRI',
         accountNumber: '2838131',
@@ -50,7 +45,16 @@ const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground,
         showBankCards: true,
         showGiftAddress: true
       });
+      setGiftVisibility({
+        showSecondBank: true,
+        showGiftAddress: true
+      });
       setLoading(false);
+    } else {
+      fetchGiftData();
+      fetchAddressData();
+      fetchSettings();
+      fetchGiftVisibility();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientSlug]);
@@ -163,7 +167,7 @@ const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground,
 
   if (loading) {
     return (
-      <div id="gift" className="relative px-8 bg-primarylight z-10 overflow-hidden pb-12 h-screen flex items-center justify-center">
+      <div id="wedding-gift" className="relative px-8 bg-primarylight z-10 overflow-hidden pb-12 h-screen flex items-center justify-center">
         <div className="bg-gradient-to-r from-gold to-accent bg-clip-text text-transparent">Loading...</div>
       </div>
     );
@@ -175,7 +179,7 @@ const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground,
 
   return (
     // FIX BACKGROUND: Hapus 'bg-primarylight' solid di sini. Gunakan relative.
-    <div id="gift" className="relative px-8 py-16 z-10 overflow-hidden min-h-screen flex flex-col items-center">
+    <div id="wedding-gift" className="relative px-8 py-16 z-10 overflow-hidden min-h-screen flex flex-col items-center">
       
       {/* LAYER 1: BACKGROUND IMAGE */}
       <div className="absolute inset-0 -z-20">
@@ -186,7 +190,7 @@ const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground,
           style={{ objectFit: 'cover' }}
           quality={100}
           priority
-          unoptimized={customBackground?.startsWith('data:')}
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
       </div>
 
@@ -281,7 +285,7 @@ const WeddingGift: React.FC<WeddingGiftProps> = ({ clientSlug, customBackground,
       )}
 
       {/* Ornament Layer - Decorative elements */}
-      <OrnamentLayer ornaments={getOrnaments('gift')} />
+      <OrnamentLayer ornaments={getOrnaments('wedding-gift')} />
     </div>
   );
 };

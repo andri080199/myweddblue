@@ -1,11 +1,43 @@
 'use client';
 
-import { Ornament } from '@/types/ornament';
+import { Ornament, OrnamentAnimation } from '@/types/ornament';
 import Image from 'next/image';
 
 interface OrnamentLayerProps {
   ornaments: Ornament[];
 }
+
+/**
+ * Get animation CSS classes based on ornament animation config
+ */
+const getAnimationClasses = (animation?: OrnamentAnimation): string => {
+  if (!animation || !animation.enabled || animation.type === 'none') {
+    return '';
+  }
+
+  const typeClass = `ornament-animate-${animation.type}`;
+  const speedClass = `ornament-animation-${animation.speed}`;
+
+  return `${typeClass} ${speedClass}`;
+};
+
+/**
+ * Get animation CSS custom properties for intensity control
+ */
+const getAnimationStyle = (animation?: OrnamentAnimation): React.CSSProperties => {
+  if (!animation || !animation.enabled) {
+    return {};
+  }
+
+  const intensityMultiplier = animation.intensity || 0.5;
+
+  return {
+    '--sway-distance': `${15 * intensityMultiplier}px`,
+    '--float-distance': `${20 * intensityMultiplier}px`,
+    '--pulse-scale': `${1 + (0.2 * intensityMultiplier)}`,
+    animationDelay: `${animation.delay}s`,
+  } as React.CSSProperties;
+};
 
 /**
  * OrnamentLayer Component
@@ -30,46 +62,64 @@ export default function OrnamentLayer({ ornaments }: OrnamentLayerProps) {
   return (
     <>
       {ornaments.map((ornament) => {
-        // Build position style object
+        // Determine anchor modes (default to top-left)
+        const anchorY = ornament.position.anchorY || 'top';
+        const anchorX = ornament.position.anchorX || 'left';
+
+        // Layer 1: Positioning only (no transforms)
         const positionStyle: React.CSSProperties = {
           position: 'absolute',
-          // Apply position coordinates
-          ...(ornament.position.top && { top: ornament.position.top }),
-          ...(ornament.position.left && { left: ornament.position.left }),
-          ...(ornament.position.right && { right: ornament.position.right }),
-          ...(ornament.position.bottom && { bottom: ornament.position.bottom }),
-          // Apply dimensions
-          width: ornament.style.width,
-          height: ornament.style.height,
-          // Apply visual styles
-          opacity: ornament.style.opacity,
-          zIndex: ornament.style.zIndex,
-          // Apply transformations (scale + rotate)
-          transform: `scale(${ornament.transform.scale}) rotate(${ornament.transform.rotate}deg)`,
-          transformOrigin: 'center',
+          // Apply position coordinates based on anchor
+          ...(anchorY === 'top' && ornament.position.top && { top: ornament.position.top }),
+          ...(anchorY === 'bottom' && ornament.position.bottom && { bottom: ornament.position.bottom }),
+          ...(anchorX === 'left' && ornament.position.left && { left: ornament.position.left }),
+          ...(anchorX === 'right' && ornament.position.right && { right: ornament.position.right }),
           // Don't block user interactions
           pointerEvents: 'none',
-          // Smooth transitions
+          // Apply z-index on outer wrapper
+          zIndex: ornament.style.zIndex,
+        };
+
+        // Layer 2: Static transforms (scale, rotate) - separate from animations
+        const staticTransformStyle: React.CSSProperties = {
+          transform: `scale(${ornament.transform.scale}) rotate(${ornament.transform.rotate}deg)`,
+          transformOrigin: 'center',
+          width: ornament.style.width,
+          height: ornament.style.height,
+        };
+
+        // Layer 3: Animations only (no static transforms)
+        const animationStyle: React.CSSProperties = {
+          width: '100%',
+          height: '100%',
+          opacity: ornament.style.opacity,
           transition: 'all 0.3s ease',
+          ...getAnimationStyle(ornament.animation)
         };
 
         return (
           <div
             key={ornament.id}
-            className="ornament-element"
             style={positionStyle}
             title={ornament.name}
           >
-            <Image
-              src={ornament.image}
-              alt={ornament.name}
-              width={parseInt(ornament.style.width) || 150}
-              height={parseInt(ornament.style.width) || 150}
-              className="w-full h-full object-contain"
-              unoptimized // Required for base64 images
-              draggable={false}
-              priority={ornament.style.zIndex > 15} // Prioritize foreground ornaments
-            />
+            <div style={staticTransformStyle}>
+              <div
+                className={`ornament-element ${getAnimationClasses(ornament.animation)}`}
+                style={animationStyle}
+              >
+                <Image
+                  src={ornament.image}
+                  alt={ornament.name}
+                  width={parseInt(ornament.style.width) || 150}
+                  height={parseInt(ornament.style.width) || 150}
+                  className="w-full h-full object-contain"
+                  unoptimized // Required for base64 images
+                  draggable={false}
+                  priority={ornament.style.zIndex > 15} // Prioritize foreground ornaments
+                />
+              </div>
+            </div>
           </div>
         );
       })}

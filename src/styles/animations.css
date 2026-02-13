@@ -19,4 +19,162 @@
       transform: rotate(360deg);
     }
   }
-  
+
+/* ===================================
+   ORNAMENT ANIMATIONS
+   GPU-accelerated transforms for performance
+   =================================== */
+
+/* 1. Horizontal Sway (left-right) */
+@keyframes ornament-sway {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(var(--sway-distance, 15px));
+  }
+}
+
+/* 2. Vertical Float (up-down) */
+@keyframes ornament-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--float-distance, -20px));
+  }
+}
+
+/* 3. Continuous Rotation */
+@keyframes ornament-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 4. Scale Pulse (in-out) */
+@keyframes ornament-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--pulse-scale, 1.1));
+  }
+}
+
+/* 5. Bounce Effect */
+@keyframes ornament-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-15px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  75% {
+    transform: translateY(-10px);
+  }
+}
+
+/* 6. Combined: Sway + Float */
+@keyframes ornament-sway-float {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  25% {
+    transform: translateX(var(--sway-distance, 10px)) translateY(-10px);
+  }
+  50% {
+    transform: translateX(0) translateY(var(--float-distance, -20px));
+  }
+  75% {
+    transform: translateX(calc(var(--sway-distance, 10px) * -1)) translateY(-10px);
+  }
+}
+
+/* 7. Combined: Rotate + Float */
+@keyframes ornament-rotate-float {
+  0% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(180deg) translateY(var(--float-distance, -15px));
+  }
+  100% {
+    transform: rotate(360deg) translateY(0);
+  }
+}
+
+/* Animation Type Classes */
+.ornament-animate-sway {
+  animation-name: ornament-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ornament-animate-float {
+  animation-name: ornament-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ornament-animate-rotate {
+  animation-name: ornament-rotate;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.ornament-animate-pulse {
+  animation-name: ornament-pulse;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ornament-animate-bounce {
+  animation-name: ornament-bounce;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ornament-animate-sway-float {
+  animation-name: ornament-sway-float;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ornament-animate-rotate-float {
+  animation-name: ornament-rotate-float;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Speed Classes */
+.ornament-animation-slow {
+  animation-duration: 8s;
+}
+
+.ornament-animation-normal {
+  animation-duration: 5s;
+}
+
+.ornament-animation-fast {
+  animation-duration: 3s;
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .ornament-animate-sway,
+  .ornament-animate-float,
+  .ornament-animate-rotate,
+  .ornament-animate-pulse,
+  .ornament-animate-bounce,
+  .ornament-animate-sway-float,
+  .ornament-animate-rotate-float {
+    animation: none;
+  }
+}

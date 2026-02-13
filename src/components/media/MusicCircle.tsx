@@ -19,10 +19,7 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
   const circleRef = useRef<HTMLDivElement>(null);
   const playPromiseRef = useRef<Promise<void> | null>(null);
   const { shouldAutoPlay, resetAutoPlay } = useMusicContext();
-  const pathname = usePathname();
-  const isDashboard = pathname?.includes('/dashboard');
-  const isUndangan = pathname?.includes('/undangan');
-
+  
   // Load music settings from admin if clientSlug is provided
   useEffect(() => {
     const loadMusicSettings = async () => {
@@ -52,7 +49,6 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
     if (!audio) return false;
 
     try {
-      // Wait for any pending play to resolve/reject first
       if (playPromiseRef.current) {
         try {
           await playPromiseRef.current;
@@ -61,9 +57,7 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
         }
       }
 
-      // Check if audio is ready
       if (audio.readyState < 2) {
-        // Wait for audio to be ready
         await new Promise<void>((resolve, reject) => {
           const onCanPlay = () => {
             audio.removeEventListener('canplay', onCanPlay);
@@ -86,7 +80,6 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
       return true;
     } catch (error) {
       playPromiseRef.current = null;
-      // Only log if it's not an abort error (which is expected when pausing quickly)
       if (error instanceof Error && error.name !== 'AbortError') {
         console.error('Audio play error:', error);
       }
@@ -94,22 +87,11 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
     }
   };
 
-  // Function to safely pause audio
-  const safePause = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    // If there's a pending play, it will be aborted by pause
-    audio.pause();
-    setIsPlaying(false);
-  };
-
   // Function to toggle play/pause
   const togglePlayPause = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Pause should ALWAYS work, regardless of loading state
     if (isPlaying || !audio.paused) {
       audio.pause();
       setIsPlaying(false);
@@ -117,7 +99,6 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
       return;
     }
 
-    // Only block play when loading
     if (isLoading) return;
 
     setIsLoading(true);
@@ -133,12 +114,9 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
     const audio = audioRef.current;
     if (!audio) return;
 
-    // Reset states when music URL changes
     setIsPlaying(false);
     setIsLoading(false);
     playPromiseRef.current = null;
-
-    // Force reload the audio element with new source
     audio.load();
   }, [musicUrl]);
 
@@ -147,24 +125,10 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handlePlay = () => {
-      setIsPlaying(true);
-      setIsLoading(false);
-    };
-
-    const handlePause = () => {
-      setIsPlaying(false);
-    };
-
-    const handleEnded = () => {
-      // For looped audio, this shouldn't fire, but handle it just in case
-      setIsPlaying(false);
-    };
-
-    const handleError = () => {
-      setIsPlaying(false);
-      setIsLoading(false);
-    };
+    const handlePlay = () => { setIsPlaying(true); setIsLoading(false); };
+    const handlePause = () => { setIsPlaying(false); };
+    const handleEnded = () => { setIsPlaying(false); };
+    const handleError = () => { setIsPlaying(false); setIsLoading(false); };
 
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
@@ -183,49 +147,31 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
   const hasAutoPlayedRef = useRef(false);
 
   useEffect(() => {
-    // Only auto-play once per mount, and only if not already playing
     if (shouldAutoPlay && audioRef.current && !isPlaying && !isLoading && !hasAutoPlayedRef.current) {
       hasAutoPlayedRef.current = true;
-
       const playMusic = async () => {
         setIsLoading(true);
         const success = await safePlay();
         setIsLoading(false);
-
-        if (success) {
-          setIsPlaying(true);
-        }
-        resetAutoPlay(); // Reset the trigger regardless of success
+        if (success) setIsPlaying(true);
+        resetAutoPlay();
       };
-
       playMusic();
     }
   }, [shouldAutoPlay, isPlaying, isLoading, resetAutoPlay]);
 
-  // Don't show if disabled by admin
   if (!showMusicPlayer) {
     return null;
   }
 
-  // Position classes - different positioning for dashboard and invitation
-  const getPositionClasses = () => {
-    if (isDashboard) {
-      return 'dashboard-music-circle';
-    }
-    if (isUndangan) {
-      // Desktop: right side within 1/3 panel
-      // Tablet/Mobile: right side of screen
-      return 'right-4 lg:right-4';
-    }
-    return 'lg:right-1/3 lg:mr-4 md:mr-4 md:right-1/4 right-4';
-  };
-
-  const positionClasses = getPositionClasses();
-
   return (
+    // PERUBAHAN UTAMA DI SINI:
+    // 1. absolute: Agar menempel pada parent container (Frame HP), bukan layar window.
+    // 2. bottom-28: Memberi jarak cukup dari bawah agar tidak bertumpuk dengan Navbar (biasanya bottom-6).
+    // 3. right-4: Jarak standar dari kanan.
     <div
       ref={circleRef}
-      className={`fixed top-3/4 ${positionClasses} z-40 w-12 h-12 rounded-full shadow-md shadow-darkprimary cursor-pointer ${
+      className={`absolute bottom-28 right-2 z-40 w-10 h-10 md:w-12 md:h-12 rounded-full shadow-lg shadow-darkprimary cursor-pointer border-2 border-darkprimary ${
         isPlaying ? 'slow-spin' : 'pause-spin'
       } ${isLoading ? 'opacity-70' : ''}`}
       onClick={togglePlayPause}
@@ -239,11 +185,7 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
         }
       }}
     >
-      <div
-        className={`relative w-full h-full rounded-full pointer-events-none ${
-          isPlaying ? '' : 'brightness-50' // Apply darker effect when paused
-        }`}
-      >
+      <div className={`relative w-full h-full rounded-full pointer-events-none overflow-hidden ${isPlaying ? '' : 'brightness-50'}`}>
         <Image
           src={weddingImage || "/images/WeddingBG.jpg"}
           alt="Music Icon"
@@ -263,7 +205,7 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
           </div>
         )}
 
-        {/* Play button - always visible when paused */}
+        {/* Play button */}
         {!isLoading && !isPlaying && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
             <svg className="w-5 h-5 text-white drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
@@ -272,7 +214,7 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
           </div>
         )}
 
-        {/* Pause button - only on hover when playing */}
+        {/* Pause button */}
         {!isLoading && isPlaying && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full opacity-0 hover:opacity-100 transition-opacity duration-300">
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -281,6 +223,16 @@ const MusicCircle: React.FC<MusicCircleProps> = ({ clientSlug, weddingImage }) =
           </div>
         )}
       </div>
+      
+      {/* Equalizer Animation (Optional decoration) */}
+      {isPlaying && (
+         <div className="absolute -bottom-1 -right-1 flex gap-0.5 items-end h-3">
+            <div className="w-1 bg-green-400 animate-pulse h-2 rounded-full"></div>
+            <div className="w-1 bg-green-400 animate-pulse h-3 rounded-full animation-delay-100"></div>
+            <div className="w-1 bg-green-400 animate-pulse h-1.5 rounded-full animation-delay-200"></div>
+         </div>
+      )}
+
       <audio
         ref={audioRef}
         src={musicUrl}

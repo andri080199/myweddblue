@@ -11,7 +11,6 @@ import { composeThemeAsync } from '@/themes/themeComposer';
 import { sampleCoupleInfo } from '@/data/sampleCouple';
 import { useClientContent } from '@/hooks/useClientContent';
 import { useComponentSettings } from '@/hooks/useComponentSettings';
-import { useSectionBackgrounds } from '@/hooks/useSectionBackgrounds';
 
 // Components
 import FullScreenImage from '@/components/media/FullScreenImage';
@@ -44,6 +43,8 @@ interface EditableInvitationProps {
 const EditableInvitation: React.FC<EditableInvitationProps> = ({ clientSlug }) => {
   // Theme state
   const [themeConfig, setThemeConfig] = useState<any>(null);
+  const [themeId, setThemeId] = useState<string | null>(null); // Store themeId for unified theme
+  const [unifiedThemeData, setUnifiedThemeData] = useState<any>(null); // Store full unified theme data
   const [loading, setLoading] = useState(true);
 
   // Use theme config (always set after fetch completes)
@@ -54,9 +55,6 @@ const EditableInvitation: React.FC<EditableInvitationProps> = ({ clientSlug }) =
 
   // Component settings
   const { settings: componentSettings, loading: settingsLoading } = useComponentSettings(clientSlug);
-
-  // Custom section backgrounds (from theme settings)
-  const { getBackground } = useSectionBackgrounds(clientSlug);
 
   // Modal and editor states
   const [showKutipanAyatModal, setShowKutipanAyatModal] = useState(false);
@@ -78,18 +76,54 @@ const EditableInvitation: React.FC<EditableInvitationProps> = ({ clientSlug }) =
         if (response.ok) {
           const data = await response.json();
 
-          // Use new composed theme system (supports all combinations: built-in + built-in, custom + built-in, built-in + custom, custom + custom)
-          const colorThemeId = data.colorTheme || 'original';
-          const backgroundThemeId = data.backgroundTheme || 'original';
+          // Check if client uses unified theme (NEW SYSTEM)
+          if (data.themeData) {
+            const unifiedTheme = data.themeData;
 
-          const composed = await composeThemeAsync(colorThemeId, backgroundThemeId);
-          setThemeConfig(composed);
+            // Store themeId and full unified theme data
+            setThemeId(unifiedTheme.theme_id);
+            setUnifiedThemeData(unifiedTheme);
+
+            // Convert unified theme to legacy format for ThemeProvider
+            const legacyTheme = {
+              id: unifiedTheme.theme_id,
+              name: unifiedTheme.theme_name,
+              description: unifiedTheme.description || '',
+              colors: unifiedTheme.colors,
+              images: {
+                hero: unifiedTheme.backgrounds?.fullscreen || '/images/Wedding1.png',
+                background: unifiedTheme.backgrounds?.welcome || '/images/Wedding2.png',
+                gallery: [],
+                couple: {
+                  bride: '/images/groom_and_bride.png',
+                  groom: '/images/groom_and_bride.png'
+                }
+              },
+              typography: {
+                primaryFont: 'Merienda, cursive',
+                secondaryFont: 'Poppins, sans-serif',
+                headingFont: 'Lavishly Yours, cursive',
+                scriptFont: 'Great Vibes, cursive'
+              },
+              customStyles: unifiedTheme.custom_styles || {},
+            };
+
+            setThemeConfig(legacyTheme);
+          } else {
+            // OLD SYSTEM: Fallback to composed theme (colorTheme + backgroundTheme)
+            const colorThemeId = data.colorTheme || 'original';
+            const backgroundThemeId = data.backgroundTheme || 'original';
+            const composed = await composeThemeAsync(colorThemeId, backgroundThemeId);
+            setThemeConfig(composed);
+            setThemeId(null); // No unified theme
+          }
         }
       } catch (error) {
         console.error('Error fetching client theme:', error);
         // Fallback to original theme on error
         const fallback = await composeThemeAsync('original', 'original');
         setThemeConfig(fallback);
+        setThemeId(null);
       } finally {
         setLoading(false);
       }
@@ -197,213 +231,225 @@ const EditableInvitation: React.FC<EditableInvitationProps> = ({ clientSlug }) =
     <EditingProvider>
       <MusicProvider>
         <ThemeProvider theme={theme} coupleInfo={coupleInfo}>
-          <div className={`theme-${themeConfig?.id?.split('-')[0] || 'original'}`}>
+          
+          {/* PERUBAHAN PENTING: Tambahkan h-full w-full di sini */}
+          <div className={`theme-${themeConfig?.id?.split('-')[0] || 'original'} h-full w-full`}>
+            
             {/* Desktop Background with blur effect */}
             <div className="theme-desktop-bg"></div>
 
-            {/* Mobile Container with backdrop blur */}
-            <div className="mobile-container relative">
-              {/* Hero / Intro Section */}
-              {componentSettings.showFullScreenImage && (
-                <EditableSection
-                  sectionId="fullscreen-image"
-                  sectionName="Gambar Pembuka"
-                  onEdit={handleEditFullScreen}
-                >
-                  <div
-                    id="fullscreen-image"
-                    className="flex items-center justify-center min-h-screen bg-gray-100"
+            {/* --- 1. Container HP (Fixed Height via CSS) --- */}
+            <div className="mobile-container">
+              
+              {/* --- 2. Scroll Area (Content moves here) --- */}
+              <div className="mobile-scroll-content">
+                
+                {/* Hero / Intro Section */}
+                {componentSettings.showFullScreenImage && (
+                  <EditableSection
+                    sectionId="fullscreen-image"
+                    sectionName="Gambar Pembuka"
+                    onEdit={handleEditFullScreen}
                   >
-                    <FullScreenImage
-                      src={theme.images.hero}
-                      alt="Example Full Screen Image"
-                      clientSlug={clientSlug}
-                      weddingImage={content.couple_info?.weddingImage}
-                      customBackground={getBackground('fullscreen')}
-                    />
-                  </div>
-                </EditableSection>
-              )}
-
-              {/* Ayat */}
-              {componentSettings.showKutipanAyat && (
-                <EditableSection
-                  sectionId="kutipan-ayat"
-                  sectionName="Kutipan Ayat"
-                  onEdit={handleEditKutipanAyat}
-                >
-                  <KutipanAyat
-                    quote={content.kutipan_ayat?.ayat}
-                    source={content.kutipan_ayat?.sumber}
-                    customBackground={getBackground('kutipan')}
-                  />
-                </EditableSection>
-              )}
-
-              {/* Welcome Message */}
-              {componentSettings.showWelcome && (
-                <EditableSection
-                  sectionId="welcome"
-                  sectionName="Info Mempelai"
-                  onEdit={handleEditWelcome}
-                >
-                  <div id="about">
-                    <Welcome
-                      coupleInfo={content.couple_info}
-                      clientSlug={clientSlug}
-                      customBackground={getBackground('welcome')}
-                    />
-                  </div>
-                </EditableSection>
-              )}
-
-              {/* Love Story */}
-              {componentSettings.showLoveStory && (
-                <EditableSection
-                  sectionId="love-story"
-                  sectionName="Cerita Cinta"
-                  onEdit={handleEditTimeline}
-                >
-                  <div id="lovestory" className="relative h-max bg-primary">
-                    <div>
-                      <Image
-                        src={getBackground('timeline') || theme.images.background}
-                        alt="Love Story Background"
-                        fill
-                        className="relative h-full z-0 object-cover"
+                    <div
+                      id="fullscreen-image"
+                      className="relative overflow-hidden flex items-center justify-center min-h-screen bg-gray-100"
+                    >
+                      <FullScreenImage
+                        src={theme.images.hero}
+                        alt="Example Full Screen Image"
+                        clientSlug={clientSlug}
+                        weddingImage={content.couple_info?.weddingImage}
+                        themeId={themeId || undefined}
                       />
                     </div>
-                    {componentSettings.showTimeline && (
-                      <Timeline loveStoryData={content.love_story} />
-                    )}
-                  </div>
-                </EditableSection>
-              )}
+                  </EditableSection>
+                )}
 
-              {/* Detail Acara */}
-              {componentSettings.showWeddingEvent && (
-                <EditableSection
-                  sectionId="wedding-event"
-                  sectionName="Detail Acara"
-                  onEdit={handleEditWeddingEvent}
-                >
-                  <div id="event">
-                    <WeddingEvent
-                      clientSlug={clientSlug}
-                      akadInfo={content.akad_info}
-                      resepsiInfo={content.resepsi_info}
-                      customBackground={getBackground('event')}
-                    />
-                  </div>
-                </EditableSection>
-              )}
+                {/* Ayat */}
+                {componentSettings.showKutipanAyat && (
+                  <EditableSection
+                    sectionId="kutipan-ayat"
+                    sectionName="Kutipan Ayat"
+                    onEdit={handleEditKutipanAyat}
+                  >
+                    <div id="kutipan-ayat" className="relative overflow-hidden">
+                      <KutipanAyat
+                        quote={content.kutipan_ayat?.ayat}
+                        source={content.kutipan_ayat?.sumber}
+                        themeId={themeId || undefined}
+                      />
+                    </div>
+                  </EditableSection>
+                )}
 
-              {/* Hadiah Pernikahan */}
-              {componentSettings.showWeddingGift && (
-                <EditableSection
-                  sectionId="wedding-gift"
-                  sectionName="Hadiah Pernikahan"
-                  onEdit={handleEditWeddingGift}
-                >
-                  <div id="gift">
+                {/* Welcome Message */}
+                {componentSettings.showWelcome && (
+                  <EditableSection
+                    sectionId="welcome"
+                    sectionName="Info Mempelai"
+                    onEdit={handleEditWelcome}
+                  >
+                    <div id="about" className="relative overflow-hidden">
+                      <Welcome
+                        coupleInfo={content.couple_info}
+                        clientSlug={clientSlug}
+                        themeId={themeId || undefined}
+                      />
+                    </div>
+                  </EditableSection>
+                )}
+
+                {/* Love Story */}
+                {componentSettings.showLoveStory && (
+                  <EditableSection
+                    sectionId="love-story"
+                    sectionName="Cerita Cinta"
+                    onEdit={handleEditTimeline}
+                  >
+                    <div id="love-story" className="relative h-max bg-primary overflow-hidden">
+                      {/* Background Image for Timeline */}
+                      {unifiedThemeData?.backgrounds?.timeline && (
+                        <div className="absolute inset-0 z-0">
+                          <Image
+                            src={unifiedThemeData.backgrounds.timeline}
+                            alt="Timeline Background"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div className="relative z-10">
+                        {componentSettings.showTimeline && (
+                          <Timeline
+                            loveStoryData={content.love_story}
+                            clientSlug={clientSlug}
+                            themeId={themeId || undefined}
+                          />
+                        )}
+                      </div>
+                    </div>
+                  </EditableSection>
+                )}
+
+                {/* Detail Acara */}
+                {componentSettings.showWeddingEvent && (
+                  <EditableSection
+                    sectionId="wedding-event"
+                    sectionName="Detail Acara"
+                    onEdit={handleEditWeddingEvent}
+                  >
+                    <div id="wedding-event" className="relative overflow-hidden">
+                      <WeddingEvent
+                        clientSlug={clientSlug}
+                        akadInfo={content.akad_info}
+                        resepsiInfo={content.resepsi_info}
+                        themeId={themeId || undefined}
+                      />
+                    </div>
+                  </EditableSection>
+                )}
+
+                {/* Hadiah Pernikahan */}
+                {componentSettings.showWeddingGift && (
+                  <EditableSection
+                    sectionId="wedding-gift"
+                    sectionName="Hadiah Pernikahan"
+                    onEdit={handleEditWeddingGift}
+                  >
                     <WeddingGift
                       key={`wedding-gift-${refreshKey}`}
                       clientSlug={clientSlug}
-                      customBackground={getBackground('gift')}
+                      themeId={themeId || undefined}
                     />
-                  </div>
-                </EditableSection>
-              )}
+                  </EditableSection>
+                )}
 
-              {/* Galeri */}
-              {componentSettings.showGallery && (
-                <EditableSection
-                  sectionId="gallery"
-                  sectionName="Galeri Foto"
-                  onEdit={handleEditGallery}
-                  onClose={() => setShowGalleryModal(false)}
-                >
-                  <div id="gallery">
+                {/* Galeri */}
+                {componentSettings.showGallery && (
+                  <EditableSection
+                    sectionId="gallery"
+                    sectionName="Galeri Foto"
+                    onEdit={handleEditGallery}
+                    onClose={() => setShowGalleryModal(false)}
+                  >
                     <OurGallery
                       galleryPhotos={galleryPhotos}
                       youtubeUrl={content.gallery_video?.youtubeUrl}
-                      customBackground={getBackground('gallery')}
+                      clientSlug={clientSlug}
+                      themeId={themeId || undefined}
+                    />
+                  </EditableSection>
+                )}
+
+                {/* RSVP Form - Read only */}
+                {componentSettings.showRSVP && (
+                  <div id="rsvp" className="relative overflow-hidden opacity-75 pointer-events-none">
+                    <div className="absolute inset-0 bg-gray-100 bg-opacity-50 z-10 flex items-center justify-center">
+                      <span className="text-gray-600 font-semibold bg-white px-4 py-2 rounded-lg shadow">
+                        Read Only
+                      </span>
+                    </div>
+                    <RSVPForm
+                      clientSlug={clientSlug}
+                      themeId={themeId || undefined}
                     />
                   </div>
-                </EditableSection>
-              )}
+                )}
 
-              {/* Gallery Edit Modal */}
-              {showGalleryModal && (
-                <GalleryEditModal
-                  clientSlug={clientSlug}
-                  sectionId="gallery"
-                  galleryPhotos={galleryPhotos}
-                  youtubeUrl={content.gallery_video?.youtubeUrl}
-                  onClose={() => setShowGalleryModal(false)}
-                  onSaveSuccess={handleSaveSuccess}
-                />
-              )}
-
-              {/* RSVP Form - Read only */}
-              {componentSettings.showRSVP && (
-                <div id="rsvp" className="relative opacity-75 pointer-events-none">
-                  <div className="absolute inset-0 bg-gray-100 bg-opacity-50 z-10 flex items-center justify-center">
-                    <span className="text-gray-600 font-semibold bg-white px-4 py-2 rounded-lg shadow">
-                      Read Only
-                    </span>
+                {/* Buku Tamu - Read only */}
+                {componentSettings.showGuestBook && (
+                  <div id="guestbook" className="relative overflow-hidden opacity-75 pointer-events-none">
+                    <div className="absolute inset-0 bg-gray-100 bg-opacity-50 z-10 flex items-center justify-center">
+                      <span className="text-gray-600 font-semibold bg-white px-4 py-2 rounded-lg shadow">
+                        Read Only
+                      </span>
+                    </div>
+                    <GuestBookList
+                      clientSlug={clientSlug}
+                      themeId={themeId || undefined}
+                    />
                   </div>
-                  <RSVPForm
+                )}
+
+                {/* Thank You Message */}
+                {componentSettings.showFooter && (
+                  <ThankYouMessage
                     clientSlug={clientSlug}
-                    customBackground={getBackground('rsvp')}
+                    themeId={themeId || undefined}
                   />
-                </div>
-              )}
+                )}
 
-              {/* Buku Tamu - Read only */}
-              {componentSettings.showGuestBook && (
-                <div className="relative opacity-75 pointer-events-none">
-                  <div className="absolute inset-0 bg-gray-100 bg-opacity-50 z-10 flex items-center justify-center">
-                    <span className="text-gray-600 font-semibold bg-white px-4 py-2 rounded-lg shadow">
-                      Read Only
-                    </span>
-                  </div>
-                  <GuestBookList
+                {/* Footer */}
+                {componentSettings.showFooter && (
+                  <Footer
                     clientSlug={clientSlug}
-                    customBackground={getBackground('guestbook')}
+                    themeId={themeId || undefined}
                   />
-                </div>
+                )}
+                
+
+              </div> 
+              {/* --- End Scroll Area --- */}
+
+
+              {/* --- 3. Floating Elements (Outside Scroll Area) --- */}
+              
+              {/* Navigasi - Floating */}
+              {componentSettings.showNavbar && (
+                <Navbar componentSettings={componentSettings} />
               )}
 
-              {/* Thank You Message */}
-              {componentSettings.showFooter && (
-                <ThankYouMessage
-                  clientSlug={clientSlug}
-                  customBackground={getBackground('thankyou')}
-                />
-              )}
-
-              {/* Footer */}
-              {componentSettings.showFooter && (
-                <Footer
-                  clientSlug={clientSlug}
-                  customBackground={getBackground('footer')}
-                />
-              )}
-
-              {/* Navigasi */}
-              {componentSettings.showNavbar && <Navbar componentSettings={componentSettings} />}
-
-              {/* Musik */}
+              {/* Musik - Floating */}
               {componentSettings.showMusic && (
-                <div className="relative mx-auto bg-gray-300">
-                  <MusicCircle
-                    clientSlug={clientSlug}
-                    weddingImage={content.couple_info?.weddingImage}
-                  />
-                </div>
+                <MusicCircle
+                  clientSlug={clientSlug}
+                  weddingImage={content.couple_info?.weddingImage}
+                />
               )}
+
             </div>
+            {/* --- End Mobile Container --- */}
           </div>
 
           {/* Modals */}
@@ -473,6 +519,18 @@ const EditableInvitation: React.FC<EditableInvitationProps> = ({ clientSlug }) =
               initialData={content.wedding_gift}
               initialAddressData={content.gift_address}
               onClose={() => setShowWeddingGiftEditor(false)}
+              onSaveSuccess={handleSaveSuccess}
+            />
+          )}
+
+          {/* Gallery Edit Modal */}
+          {showGalleryModal && (
+            <GalleryEditModal
+              clientSlug={clientSlug}
+              sectionId="gallery"
+              galleryPhotos={galleryPhotos}
+              youtubeUrl={content.gallery_video?.youtubeUrl}
+              onClose={() => setShowGalleryModal(false)}
               onSaveSuccess={handleSaveSuccess}
             />
           )}

@@ -149,8 +149,13 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
     );
   }
 
+  // LOGIC SCROLL PINTAR:
+  // Cek apakah user sedang membuka menu Edit Undangan
+  const isEditing = activeSection === 'edit-content';
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans selection:bg-[#BDE8F5] selection:text-[#0F2854] relative flex overflow-hidden">
+    // Tetap gunakan h-screen agar layout utama terkunci di viewport
+    <div className="h-screen bg-[#F8FAFC] text-slate-800 font-sans selection:bg-[#BDE8F5] selection:text-[#0F2854] relative flex overflow-hidden">
 
       {/* --- MOBILE OVERLAY --- */}
       {isMobile && sidebarOpen && (
@@ -288,10 +293,11 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           {sidebarOpen ? (
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-400 hover:text-white hover:bg-rose-500/20 border border-transparent hover:border-rose-500/30 transition-all group"
+              className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-rose-400 hover:text-white hover:bg-rose-500/20 border border-transparent hover:border-rose-500/30 transition-all group transition-300 ease-out"
             >
-              <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              
               <span className="text-sm font-medium">Keluar</span>
+              <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform rotate-180 " />
             </button>
           ) : (
             <button
@@ -299,7 +305,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
               className="w-full flex items-center justify-center p-2 rounded-xl text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors"
               title="Keluar"
             >
-              <LogOut className="w-5 h-5" />
+              <LogOut className="w-5 h-5 rotate-180" />
             </button>
           )}
 
@@ -317,16 +323,16 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       {/* --- MAIN CONTENT --- */}
       <main
         className={`
-          flex-1 min-h-screen transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) flex flex-col bg-[#F8FAFC]
+          flex-1 h-screen flex flex-col transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) bg-[#F8FAFC] overflow-hidden
           ${isMobile
-            ? 'ml-0' // Mobile: Full width
-            : (sidebarOpen ? 'ml-72' : 'ml-20') // Desktop: Push content
+            ? 'ml-0'
+            : (sidebarOpen ? 'ml-72' : 'ml-20')
           }
         `}
       >
-        {/* MOBILE TOP BAR (Hanya muncul di Mobile) */}
+        {/* MOBILE TOP BAR */}
         {isMobile && (
-          <header className="h-16 flex items-center justify-between px-4 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30 lg:hidden shadow-sm">
+          <header className="h-16 flex-none flex items-center justify-between px-4 bg-white/80 backdrop-blur-md border-b border-slate-200 z-30 shadow-sm relative">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -344,9 +350,26 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
           </header>
         )}
 
-        {/* Content Area - TANPA PADDING/MARGIN TAMBAHAN */}
-        <div className="w-full h-full relative">
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+        {/* --- CONTENT AREA (SMART SCROLL) --- */}
+        {/* Logic: 
+            - Jika halaman Edit: overflow-hidden (Scroll ditangani oleh komponen Editor internal)
+            - Jika halaman Lain: overflow-y-auto (Agar list tamu/pesan bisa di-scroll) 
+        */}
+        <div 
+          className={`
+            flex-1 w-full relative bg-[#F8FAFC]
+            ${isEditing ? 'overflow-hidden' : 'overflow-y-auto'}
+          `}
+        >
+          {/* Wrapper Content:
+            - isEditing: h-full (Agar rantai tinggi nyambung ke editor)
+            - Lainnya: min-h-full (Agar background putih tetap full meski konten sedikit)
+            - TIDAK ADA PADDING TAMBAHAN (Sesuai request)
+          */}
+          <div className={`
+            w-full animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out
+            ${isEditing ? 'h-full' : 'min-h-full'}
+          `}>
             {children}
           </div>
         </div>

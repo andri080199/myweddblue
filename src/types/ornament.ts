@@ -8,6 +8,8 @@ export interface OrnamentPosition {
   left?: string | null;    // "20%", "100px", null
   right?: string | null;   // "15%", "80px", null
   bottom?: string | null;  // "5%", "30px", null
+  anchorY?: 'top' | 'bottom'; // Anchor to top or bottom of section (default: 'top')
+  anchorX?: 'left' | 'right'; // Anchor to left or right of section (default: 'left')
 }
 
 export interface OrnamentTransform {
@@ -22,6 +24,35 @@ export interface OrnamentStyle {
   zIndex: number;     // 5 to 20 (between background and modals)
 }
 
+/**
+ * Animation types for ornament movements
+ */
+export type AnimationType =
+  | 'none'           // No animation
+  | 'sway'           // Horizontal sway (left-right)
+  | 'float'          // Vertical float (up-down)
+  | 'rotate'         // Continuous rotation
+  | 'pulse'          // Scale pulse (in-out)
+  | 'bounce'         // Bounce effect
+  | 'sway-float'     // Combined horizontal sway + vertical float
+  | 'rotate-float';  // Combined rotation + vertical float
+
+/**
+ * Animation speed presets
+ */
+export type AnimationSpeed = 'slow' | 'normal' | 'fast';
+
+/**
+ * Animation configuration for ornaments
+ */
+export interface OrnamentAnimation {
+  type: AnimationType;              // Animation type
+  enabled: boolean;                 // Enable/disable toggle
+  speed: AnimationSpeed;            // Speed of animation
+  intensity: number;                // Amplitude/range (0.1 to 1.0)
+  delay: number;                    // Animation delay in seconds (0-5)
+}
+
 export interface Ornament {
   id: string;                     // Unique identifier (e.g., "orn-1234567890")
   section: SectionId;             // Which section this ornament belongs to
@@ -32,23 +63,24 @@ export interface Ornament {
   style: OrnamentStyle;           // Visual styling
   isVisible: boolean;             // Toggle visibility without deleting
   createdAt: string;              // ISO timestamp
+  animation?: OrnamentAnimation;  // Optional animation configuration
 }
 
 /**
  * Available sections where ornaments can be placed
  */
 export type SectionId =
-  | 'fullscreen'    // Hero/Landing section
-  | 'kutipan'       // Kutipan Ayat section
-  | 'welcome'       // Welcome section
-  | 'timeline'      // Timeline section
-  | 'event'         // Wedding Event section
-  | 'gift'          // Wedding Gift section
-  | 'gallery'       // Gallery section
-  | 'rsvp'          // RSVP Form section
-  | 'guestbook'     // Guestbook section
-  | 'thankyou'      // Thank You section
-  | 'footer';       // Footer section
+  | 'fullscreen-image'  // Hero/Landing section
+  | 'kutipan-ayat'      // Kutipan Ayat section
+  | 'welcome'           // Welcome section
+  | 'love-story'        // Love Story / Timeline section
+  | 'wedding-event'     // Wedding Event section
+  | 'wedding-gift'      // Wedding Gift section
+  | 'gallery'           // Gallery section
+  | 'rsvp'              // RSVP Form section
+  | 'guestbook'         // Guestbook section
+  | 'thankyou'          // Thank You section
+  | 'footer';           // Footer section
 
 /**
  * Data structure stored in client_content table
@@ -94,17 +126,17 @@ export interface OrnamentFormData {
  * Helper type for section labels (display names)
  */
 export const SECTION_LABELS: Record<SectionId, string> = {
-  fullscreen: 'Hero / Landing',
-  kutipan: 'Kutipan Ayat',
-  welcome: 'Welcome',
-  timeline: 'Timeline',
-  event: 'Wedding Event',
-  gift: 'Wedding Gift',
-  gallery: 'Gallery',
-  rsvp: 'RSVP Form',
-  guestbook: 'Guestbook',
-  thankyou: 'Thank You',
-  footer: 'Footer'
+  'fullscreen-image': 'Gambar Pembuka',
+  'kutipan-ayat': 'Kutipan Ayat',
+  'welcome': 'Info Mempelai',
+  'love-story': 'Cerita Cinta',
+  'wedding-event': 'Detail Acara',
+  'wedding-gift': 'Hadiah Pernikahan',
+  'gallery': 'Galeri',
+  'rsvp': 'RSVP',
+  'guestbook': 'Buku Tamu',
+  'thankyou': 'Terima Kasih',
+  'footer': 'Footer'
 };
 
 /**
@@ -115,7 +147,9 @@ export const DEFAULT_ORNAMENT_VALUES = {
     top: '10%',
     left: '10%',
     right: null,
-    bottom: null
+    bottom: null,
+    anchorY: 'top' as 'top' | 'bottom',
+    anchorX: 'left' as 'left' | 'right'
   },
   transform: {
     scale: 1,
@@ -128,4 +162,15 @@ export const DEFAULT_ORNAMENT_VALUES = {
     zIndex: 15
   },
   isVisible: true
+};
+
+/**
+ * Default animation values
+ */
+export const DEFAULT_ANIMATION_VALUES: OrnamentAnimation = {
+  type: 'none',
+  enabled: false,
+  speed: 'normal',
+  intensity: 0.5,
+  delay: 0
 };

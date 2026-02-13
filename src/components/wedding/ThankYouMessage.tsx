@@ -3,18 +3,18 @@ import Image from "next/image";
 import ScrollReveal from "../ui/ScrollReveal";
 import { Heart, Sparkles } from "lucide-react";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "./OrnamentLayer";
 
 interface ThankYouMessageProps {
   clientSlug: string;
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const ThankYouMessage: React.FC<ThankYouMessageProps> = ({ clientSlug, customBackground, templateId }) => {
+const ThankYouMessage: React.FC<ThankYouMessageProps> = ({ clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('thankyou') || theme.images.background;
   
   const messageData = {
     title: "Thank You",
@@ -26,16 +26,17 @@ const ThankYouMessage: React.FC<ThankYouMessageProps> = ({ clientSlug, customBac
   };
 
   return (
-    <section className="relative text-gray-800 overflow-hidden min-h-screen flex items-center justify-center">
+    <section id="thankyou" className="relative text-gray-800 overflow-hidden min-h-screen flex items-center justify-center">
       {/* Beautiful Elegant Background */}
       <div className="absolute inset-0 z-0">
         <Image
-          src={customBackground || theme.images.background}
+          src={backgroundImage}
           alt="Wedding Background"
           fill
           style={{ objectFit: 'cover' }}
           quality={100}
           className=""
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
         {/* Elegant Glass Morphism Overlay */}
         {/* <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/40 to-white/70 backdrop-blur-[1px]"></div>

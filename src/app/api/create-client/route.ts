@@ -64,14 +64,16 @@ async function generateUniqueSlug(baseSlug: string): Promise<string> {
 export async function POST(req: NextRequest) {
   const {
     slug,
-    theme, // Legacy: bundled theme
-    colorTheme, // New: separate color theme
-    backgroundTheme, // New: separate background theme
+    unifiedThemeId, // NEW UNIFIED SYSTEM: single theme ID
     password = 'client123'
   } = await req.json();
 
   if (!slug) {
     return NextResponse.json({ success: false, message: 'Slug is required' }, { status: 400 });
+  }
+
+  if (!unifiedThemeId) {
+    return NextResponse.json({ success: false, message: 'Unified theme ID is required' }, { status: 400 });
   }
 
   try {
@@ -81,43 +83,29 @@ export async function POST(req: NextRequest) {
     // Generate unique slug (adds suffix if duplicate)
     const finalSlug = await generateUniqueSlug(slug);
 
-    // ✅ NEW UNIFIED SYSTEM: All clients in single database
-    // No more separate databases per client!
+    // Verify theme exists
+    const themeCheck = await masterDB.query(
+      'SELECT theme_id FROM unified_themes WHERE theme_id = $1',
+      [unifiedThemeId]
+    );
+
+    if (themeCheck.rows.length === 0) {
+      return NextResponse.json({
+        success: false,
+        message: `Theme "${unifiedThemeId}" not found`
+      }, { status: 404 });
+    }
+
+    // ✅ UNIFIED THEME SYSTEM: All clients in single database
     console.log(`✅ Creating client in unified database: ${finalSlug}`);
 
-    // Insert client record in master database
-    // NEW SYSTEM: Always use color_theme + background_theme if provided
-    if (colorTheme && backgroundTheme) {
-      await masterDB.query(
-        'INSERT INTO clients (slug, color_theme, background_theme, password) VALUES ($1, $2, $3, $4)',
-        [finalSlug, colorTheme, backgroundTheme, password]
-      );
-      console.log(`✅ Client ${finalSlug} created with themes: ${colorTheme} + ${backgroundTheme}`);
-    }
-    // LEGACY SYSTEM: Use theme + optional background_theme
-    else if (theme) {
-      if (backgroundTheme && backgroundTheme !== 'original') {
-        await masterDB.query(
-          'INSERT INTO clients (slug, theme, background_theme, password) VALUES ($1, $2, $3, $4)',
-          [finalSlug, theme, backgroundTheme, password]
-        );
-        console.log(`✅ Client ${finalSlug} created with legacy themes: ${theme} + ${backgroundTheme}`);
-      } else {
-        await masterDB.query(
-          'INSERT INTO clients (slug, theme, password) VALUES ($1, $2, $3)',
-          [finalSlug, theme, password]
-        );
-        console.log(`✅ Client ${finalSlug} created with legacy theme: ${theme}`);
-      }
-    }
-    // FALLBACK: Default to original
-    else {
-      await masterDB.query(
-        'INSERT INTO clients (slug, color_theme, background_theme, password) VALUES ($1, $2, $3, $4)',
-        [finalSlug, 'original', 'original', password]
-      );
-      console.log(`✅ Client ${finalSlug} created with default themes: original + original`);
-    }
+    // Insert client record with unified_theme_id
+    await masterDB.query(
+      'INSERT INTO clients (slug, unified_theme_id, password) VALUES ($1, $2, $3)',
+      [finalSlug, unifiedThemeId, password]
+    );
+
+    console.log(`✅ Client ${finalSlug} created with unified theme: ${unifiedThemeId}`);
 
     // NOTE: All client data (rsvp, guestbook, content, gallery) will be stored
     // in unified tables with client_id foreign keys in the master database

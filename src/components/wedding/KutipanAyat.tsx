@@ -5,15 +5,14 @@ import ScrollReveal from "../ui/ScrollReveal";
 import { parseCoupleFromSlug } from "@/utils/slugUtils";
 import { Heart, Sparkles, BookOpen } from "lucide-react";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "./OrnamentLayer";
 
 interface KutipanAyatProps {
   title?: string; // Props opsional untuk mengganti judul
   quote?: string; // Props opsional untuk mengganti kutipan ayat
   source?: string; // Props opsional untuk mengganti sumber kutipan
-  customBackground?: string; // Custom background image
-  templateId?: number | null;
+  themeId?: string; // Unified theme ID
 }
 
 const KutipanAyat: React.FC<KutipanAyatProps> = ({
@@ -23,15 +22,14 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
           sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat
           tanda-tanda bagi kaum yang berfikir."`,
   source = "(Q.S. Ar-Rum : 21)",
-  customBackground,
-  templateId,
+  themeId,
 }) => {
   const { theme } = useThemeContext();
-  const backgroundImage = customBackground || theme.images.background;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('kutipan') || theme.images.background;
   const params = useParams();
   const clientSlug = params?.clientSlug as string;
   const coupleNames = parseCoupleFromSlug(clientSlug);
-  const { getOrnaments } = useTemplateOrnaments(templateId);
   
   return (
     <div id="kutipan-ayat" className="relative min-h-screen flex items-center justify-center py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8 overflow-hidden">
@@ -44,7 +42,7 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
           style={{ objectFit: 'cover' }}
           quality={100}
           className="z-0"
-          unoptimized={customBackground?.startsWith('data:')}
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
       </div>
 
@@ -168,7 +166,7 @@ const KutipanAyat: React.FC<KutipanAyatProps> = ({
       </ScrollReveal>
 
       {/* Ornament Layer - Decorative elements */}
-      <OrnamentLayer ornaments={getOrnaments('kutipan')} />
+      <OrnamentLayer ornaments={getOrnaments('kutipan-ayat')} />
     </div>
   );
 };

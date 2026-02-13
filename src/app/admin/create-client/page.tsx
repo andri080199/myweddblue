@@ -1,38 +1,21 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { getAllColorThemes } from '@/themes/colorThemes';
-import { getAllBackgroundThemes } from '@/themes/backgroundThemes';
 import {
   User, Check, Trash2, Plus, Users,
-  Calendar, ChevronLeft, ChevronRight, Copy, Layout, Search,
-  ExternalLink, Sparkles, ShieldCheck, Lock, Eye, EyeOff, Palette, ImageIcon
+  Calendar, ChevronLeft, ChevronRight, Copy, Search,
+  ExternalLink, Sparkles, ShieldCheck, Lock, Eye, EyeOff, Palette, ImageIcon, Layers
 } from 'lucide-react';
 import { ToastContainer } from '@/components/ui/Toast';
 import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { UnifiedThemeWithStats } from '@/types/unified-theme';
+import Image from 'next/image';
 
 interface Client {
   id: number;
   slug: string;
-  theme: string;
-  background_theme?: string;
-  color_theme?: string;
+  unified_theme_id?: string;
   created_at: string;
-}
-
-interface ColorTheme {
-  id: string;
-  name: string;
-  description?: string;
-  colors: any;
-  primary?: string;
-}
-
-interface BackgroundTheme {
-  id: string;
-  name: string;
-  description?: string;
-  images: any;
 }
 
 // Loader component
@@ -50,13 +33,9 @@ export default function CreateClientPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Theme selection state - SIMPLIFIED (always color + background)
-  const [selectedColorTheme, setSelectedColorTheme] = useState('original');
-  const [selectedBackgroundTheme, setSelectedBackgroundTheme] = useState('original');
-
-  // Theme lists state
-  const [colorThemes, setColorThemes] = useState<ColorTheme[]>([]);
-  const [backgroundThemes, setBackgroundThemes] = useState<BackgroundTheme[]>([]);
+  // Unified theme selection
+  const [selectedThemeId, setSelectedThemeId] = useState('original');
+  const [themes, setThemes] = useState<UnifiedThemeWithStats[]>([]);
   const [loadingThemes, setLoadingThemes] = useState(true);
 
   // Client list state
@@ -76,30 +55,31 @@ export default function CreateClientPage() {
     isLoading?: boolean;
   }>({ isOpen: false });
 
+  // Get selected theme details
+  const selectedTheme = themes.find(t => t.theme_id === selectedThemeId);
+
   // Get theme display info for client cards
   const getThemeDisplayInfo = (client: Client) => {
-    let display = 'No Theme';
-    let subDisplay = '-';
-    let backgroundStyle = 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)';
+    const theme = themes.find(t => t.theme_id === client.unified_theme_id);
 
-    if (client.color_theme && client.background_theme) {
-      const colorTheme = colorThemes.find(t => t.id === client.color_theme);
-      const bgTheme = backgroundThemes.find(t => t.id === client.background_theme);
-
-      display = colorTheme?.name || client.color_theme;
-      subDisplay = bgTheme?.name || client.background_theme;
-
-      if (colorTheme?.colors) {
-        backgroundStyle = `linear-gradient(135deg, ${colorTheme.colors.primary} 0%, ${colorTheme.colors.darkprimary || colorTheme.colors.primary} 100%)`;
-      }
-    } else if (client.theme) {
-      // Legacy theme
-      display = client.theme;
-      subDisplay = 'Legacy';
-      backgroundStyle = 'linear-gradient(135deg, #64748b 0%, #475569 100%)';
+    if (!theme) {
+      return {
+        name: 'No Theme',
+        gradient: 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)',
+        stats: { colors: 0, backgrounds: 0, ornaments: 0 }
+      };
     }
 
-    return { display, subDisplay, backgroundStyle };
+    return {
+      name: theme.theme_name,
+      gradient: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primarylight} 50%, ${theme.colors.darkprimary} 100%)`,
+      stats: {
+        colors: theme.stats?.color_count || 0,
+        backgrounds: theme.stats?.background_count || 0,
+        ornaments: theme.stats?.ornament_count || 0
+      },
+      isBuiltin: theme.is_builtin
+    };
   };
 
   // Initialize - fetch themes and clients
@@ -108,19 +88,19 @@ export default function CreateClientPage() {
     fetchClients();
   }, []);
 
-  // Fetch all themes (built-in + custom)
+  // Fetch unified themes
   const fetchThemes = async () => {
     try {
       setLoadingThemes(true);
+      const response = await fetch('/api/unified-themes?includeOrnaments=true');
+      const data = await response.json();
 
-      // Fetch color themes (built-in + custom)
-      const colors = await getAllColorThemes();
-      setColorThemes(colors);
-
-      // Fetch background themes (built-in + custom)
-      const backgrounds = await getAllBackgroundThemes();
-      setBackgroundThemes(backgrounds);
-
+      if (data.success) {
+        setThemes(data.themes || []);
+      } else {
+        console.error('Failed to fetch themes:', data.error);
+        (window as any).toast?.showError('Error', 'Gagal load themes');
+      }
     } catch (error) {
       console.error('Error fetching themes:', error);
       (window as any).toast?.showError('Error', 'Gagal load themes');
@@ -217,15 +197,14 @@ export default function CreateClientPage() {
     return pages;
   };
 
-  // SUBMIT - SIMPLIFIED (always send colorTheme + backgroundTheme)
+  // SUBMIT - UNIFIED THEME SYSTEM
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
       const requestBody = {
         slug,
-        colorTheme: selectedColorTheme,
-        backgroundTheme: selectedBackgroundTheme,
+        unifiedThemeId: selectedThemeId,
         password: password || 'client123'
       };
 
@@ -250,8 +229,7 @@ export default function CreateClientPage() {
         // Reset form
         setSlug('');
         setPassword('');
-        setSelectedColorTheme('original');
-        setSelectedBackgroundTheme('original');
+        setSelectedThemeId('original');
         fetchClients();
       } else {
         (window as any).toast?.showError('Gagal', data.message);
@@ -262,49 +240,6 @@ export default function CreateClientPage() {
       setLoading(false);
     }
   };
-
-  // Selection Card Component
-  const SelectionCard = ({
-    isSelected,
-    onClick,
-    title,
-    subtitle,
-    previewContent,
-    badge
-  }: {
-    isSelected: boolean,
-    onClick: () => void,
-    title: string,
-    subtitle?: string,
-    previewContent: React.ReactNode,
-    badge?: React.ReactNode
-  }) => (
-    <div
-      onClick={onClick}
-      className={`relative group cursor-pointer rounded-2xl p-4 transition-all duration-300 border ${
-        isSelected
-          ? 'border-[#1C4D8D] bg-[#BDE8F5]/30 ring-1 ring-[#1C4D8D]/20 shadow-lg shadow-[#1C4D8D]/10'
-          : 'border-[#1C4D8D]/10 bg-white hover:border-[#4988C4] hover:shadow-md hover:shadow-[#1C4D8D]/5'
-      }`}
-    >
-      {isSelected && (
-        <div className="absolute top-3 right-3 w-5 h-5 bg-[#1C4D8D] rounded-full flex items-center justify-center shadow-lg z-10 animate-in zoom-in-50 duration-200">
-          <Check className="w-3 h-3 text-white stroke-[3]" />
-        </div>
-      )}
-
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          {previewContent}
-          {badge}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className={`font-bold text-sm truncate ${isSelected ? 'text-[#0F2854]' : 'text-[#1C4D8D]'}`}>{title}</h4>
-          {subtitle && <p className="text-xs text-[#4988C4] line-clamp-1">{subtitle}</p>}
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] pb-20 font-sans selection:bg-[#BDE8F5] selection:text-[#0F2854]">
@@ -320,7 +255,7 @@ export default function CreateClientPage() {
             <div className="space-y-4 max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1C4D8D]/30 border border-[#4988C4]/30 backdrop-blur-md">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#BDE8F5]" />
-                <span className="text-[10px] font-bold text-[#BDE8F5] tracking-widest uppercase">Dashboard Client Control</span>
+                <span className="text-[10px] font-bold text-[#BDE8F5] tracking-widest uppercase">Unified Theme System</span>
               </div>
 
               <div>
@@ -328,7 +263,7 @@ export default function CreateClientPage() {
                   Manajemen <span className="text-[#4988C4]">Klien</span>
                 </h1>
                 <p className="mt-4 text-lg text-[#BDE8F5]/80 font-light leading-relaxed max-w-xl">
-                  Atur undangan pernikahan baru dan kelola portofolio klien yang ada dengan presisi dan eksklusif.
+                  Buat klien baru dengan tema lengkap: warna + background + ornamen dalam satu paket.
                 </p>
               </div>
             </div>
@@ -362,7 +297,7 @@ export default function CreateClientPage() {
                   </div>
                   Buat Klien Baru
                 </h2>
-                <p className="text-xs text-[#4988C4] mt-2">Masukkan informasi dasar & pilih tema</p>
+                <p className="text-xs text-[#4988C4] mt-2">Pilih tema unified lengkap</p>
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
@@ -409,11 +344,11 @@ export default function CreateClientPage() {
                   <p className="text-xs text-[#4988C4]/70 ml-1">Kosongkan untuk default: client123</p>
                 </div>
 
-                {/* NEW SYSTEM: Unified Color Theme Dropdown */}
+                {/* UNIFIED THEME SELECTOR */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-[#1C4D8D] uppercase tracking-wider ml-1 flex items-center gap-2">
-                    <Palette className="w-3.5 h-3.5" />
-                    Color Theme
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Unified Theme
                   </label>
 
                   {loadingThemes ? (
@@ -421,96 +356,99 @@ export default function CreateClientPage() {
                       <Loader className="w-6 h-6 text-[#1C4D8D]" />
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-1 custom-scrollbar">
-                      {colorThemes.map((theme) => {
-                        // Check if it's a custom theme
-                        const isCustom = !['original', 'romantic', 'sunset', 'city', 'classic', 'coral', 'emerald', 'lavender', 'modern', 'sapphire', 'vintage'].includes(theme.id);
-
-                        return (
-                          <SelectionCard
-                            key={theme.id}
-                            isSelected={selectedColorTheme === theme.id}
-                            onClick={() => setSelectedColorTheme(theme.id)}
-                            title={theme.name}
-                            subtitle={theme.description || 'Color theme'}
-                            previewContent={
-                              <div
-                                className="w-10 h-10 rounded-xl shadow-sm flex-shrink-0 ring-1 ring-black/5"
-                                style={{
-                                  background: theme.colors
-                                    ? `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.darkprimary || theme.colors.primary} 100%)`
-                                    : 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)'
-                                }}
-                              />
-                            }
-                            badge={
-                              isCustom ? (
-                                <div className="absolute -top-1 -right-1 bg-purple-500 rounded-full p-0.5">
-                                  <Sparkles className="w-2.5 h-2.5 text-white" />
-                                </div>
-                              ) : null
-                            }
-                          />
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* NEW SYSTEM: Unified Background Theme Dropdown */}
-                <div className="space-y-3">
-                  <label className="text-xs font-bold text-[#1C4D8D] uppercase tracking-wider ml-1 flex items-center gap-2">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    Background Theme
-                  </label>
-
-                  {loadingThemes ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader className="w-6 h-6 text-[#1C4D8D]" />
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-3 max-h-[280px] overflow-y-auto pr-1 custom-scrollbar">
-                      {backgroundThemes.map((bgTheme) => {
-                        // Check if it's a custom theme
-                        const isCustom = !['original', 'city', 'flora', 'tropical'].includes(bgTheme.id);
-
-                        return (
+                    <>
+                      {/* Theme Grid */}
+                      <div className="grid grid-cols-1 gap-3 max-h-[400px] overflow-y-auto pr-1 custom-scrollbar">
+                        {themes.map((theme) => (
                           <div
-                            key={bgTheme.id}
-                            onClick={() => setSelectedBackgroundTheme(bgTheme.id)}
-                            className={`relative cursor-pointer rounded-xl overflow-hidden border-2 transition-all aspect-video group ${
-                              selectedBackgroundTheme === bgTheme.id
-                                ? 'border-[#1C4D8D] ring-2 ring-[#BDE8F5] shadow-md'
-                                : 'border-transparent hover:border-[#4988C4]'
+                            key={theme.theme_id}
+                            onClick={() => setSelectedThemeId(theme.theme_id)}
+                            className={`relative group cursor-pointer rounded-2xl overflow-hidden transition-all duration-300 border-2 ${
+                              selectedThemeId === theme.theme_id
+                                ? 'border-[#1C4D8D] bg-[#BDE8F5]/30 ring-2 ring-[#1C4D8D]/20 shadow-lg'
+                                : 'border-[#1C4D8D]/10 hover:border-[#4988C4] hover:shadow-md'
                             }`}
                           >
+                            {/* Gradient Preview */}
                             <div
-                              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                              style={{ backgroundImage: bgTheme.images?.hero ? `url(${bgTheme.images.hero})` : 'linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%)' }}
-                            />
-                            <div className={`absolute inset-0 transition-opacity ${
-                              selectedBackgroundTheme === bgTheme.id ? 'bg-[#0F2854]/60' : 'bg-black/20 group-hover:bg-black/10'
-                            }`} />
+                              className="h-16 relative"
+                              style={{
+                                background: `linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.primarylight} 50%, ${theme.colors.darkprimary} 100%)`
+                              }}
+                            >
+                              {theme.is_builtin && (
+                                <div className="absolute top-2 right-2 bg-slate-800/80 backdrop-blur-sm px-2 py-0.5 rounded-full">
+                                  <span className="text-[9px] font-bold text-white uppercase">🔒 Built-in</span>
+                                </div>
+                              )}
 
-                            {selectedBackgroundTheme === bgTheme.id && (
-                              <div className="absolute top-2 right-2 w-5 h-5 bg-[#1C4D8D] rounded-full flex items-center justify-center shadow-md animate-in zoom-in-50">
-                                <Check className="w-3 h-3 text-white" />
+                              {/* Background thumbnail overlay */}
+                              {theme.backgrounds.fullscreen && (
+                                <div className="absolute bottom-0 left-0 right-0 h-6 overflow-hidden opacity-40">
+                                  <Image
+                                    src={theme.backgrounds.fullscreen}
+                                    alt="Background preview"
+                                    fill
+                                    className="object-cover"
+                                    sizes="200px"
+                                  />
+                                </div>
+                              )}
+
+                              {selectedThemeId === theme.theme_id && (
+                                <div className="absolute top-2 left-2 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in-50">
+                                  <Check className="w-3 h-3 text-[#1C4D8D]" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Theme Info */}
+                            <div className="p-3 bg-white">
+                              <h4 className="font-bold text-sm text-[#0F2854] truncate">{theme.theme_name}</h4>
+                              <p className="text-[10px] text-[#4988C4] line-clamp-1 mb-2">{theme.description}</p>
+
+                              {/* Stats */}
+                              <div className="flex items-center gap-2 text-[10px] text-[#1C4D8D]">
+                                <div className="flex items-center gap-1">
+                                  <Palette className="w-3 h-3" />
+                                  <span>{theme.stats?.color_count || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <ImageIcon className="w-3 h-3" />
+                                  <span>{theme.stats?.background_count || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Layers className="w-3 h-3" />
+                                  <span>{theme.stats?.ornament_count || 0}</span>
+                                </div>
                               </div>
-                            )}
-
-                            {isCustom && (
-                              <div className="absolute top-2 left-2 bg-purple-500 rounded-full p-1">
-                                <Sparkles className="w-2.5 h-2.5 text-white" />
-                              </div>
-                            )}
-
-                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-[#0F2854] to-transparent">
-                              <p className="text-xs font-bold text-white text-center truncate drop-shadow-md">{bgTheme.name}</p>
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
+                        ))}
+                      </div>
+
+                      {/* Selected Theme Preview */}
+                      {selectedTheme && (
+                        <div className="mt-4 p-4 bg-gradient-to-br from-[#BDE8F5]/20 to-[#4988C4]/10 rounded-xl border border-[#4988C4]/20">
+                          <p className="text-xs font-bold text-[#0F2854] mb-2">Preview: {selectedTheme.theme_name}</p>
+                          <div className="grid grid-cols-8 gap-1">
+                            {Object.entries(selectedTheme.colors).map(([key, color]) => (
+                              <div
+                                key={key}
+                                className="aspect-square rounded shadow-sm ring-1 ring-black/5"
+                                style={{ backgroundColor: color }}
+                                title={key}
+                              />
+                            ))}
+                          </div>
+                          <div className="flex items-center justify-between mt-3 text-[10px] text-[#4988C4]">
+                            <span>{selectedTheme.stats?.color_count || 0} colors</span>
+                            <span>{selectedTheme.stats?.background_count || 0} backgrounds</span>
+                            <span>{selectedTheme.stats?.ornament_count || 0} ornaments</span>
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
 
@@ -568,7 +506,7 @@ export default function CreateClientPage() {
               <>
                 <div className="grid gap-4">
                   {currentClients.map((client) => {
-                    const { display, subDisplay, backgroundStyle } = getThemeDisplayInfo(client);
+                    const themeInfo = getThemeDisplayInfo(client);
 
                     return (
                       <div
@@ -581,26 +519,30 @@ export default function CreateClientPage() {
                           <div className="relative flex-shrink-0">
                             <div
                               className="w-14 h-14 rounded-2xl shadow-md ring-1 ring-black/5"
-                              style={{ background: backgroundStyle }}
+                              style={{ background: themeInfo.gradient }}
                             />
                             <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white rounded-full flex items-center justify-center shadow-sm">
-                              <Check className="w-3 h-3 text-green-600" />
+                              {themeInfo.isBuiltin ? <span className="text-xs">🔒</span> : <Sparkles className="w-3 h-3 text-indigo-600" />}
                             </div>
                           </div>
 
                           {/* Client Info */}
                           <div className="flex-1 min-w-0">
                             <h3 className="font-bold text-lg text-[#0F2854] mb-1 truncate">{client.slug}</h3>
-                            <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <div className="flex flex-wrap items-center gap-2 text-xs mb-2">
                               <span className="px-2 py-1 bg-[#BDE8F5]/30 text-[#1C4D8D] rounded-md font-medium">
-                                {display}
+                                {themeInfo.name}
                               </span>
-                              <span className="text-[#4988C4]">+</span>
-                              <span className="px-2 py-1 bg-[#4988C4]/10 text-[#1C4D8D] rounded-md font-medium">
-                                {subDisplay}
-                              </span>
+                              <div className="flex items-center gap-1.5 text-[#4988C4]">
+                                <Palette className="w-3 h-3" />
+                                <span>{themeInfo.stats.colors}</span>
+                                <ImageIcon className="w-3 h-3 ml-1" />
+                                <span>{themeInfo.stats.backgrounds}</span>
+                                <Layers className="w-3 h-3 ml-1" />
+                                <span>{themeInfo.stats.ornaments}</span>
+                              </div>
                             </div>
-                            <p className="text-xs text-[#4988C4] mt-2 flex items-center gap-1.5">
+                            <p className="text-xs text-[#4988C4] flex items-center gap-1.5">
                               <Calendar className="w-3 h-3" />
                               {new Date(client.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                             </p>

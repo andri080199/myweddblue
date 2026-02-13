@@ -56,13 +56,6 @@ const adminRoutes = [
     icon: '📋',
     description: 'Templates',
     gradient: 'from-[#1C4D8D] to-[#4988C4]'
-  },
-  {
-    name: 'Ornament Manager',
-    path: '/admin/ornament-manager',
-    icon: '✨',
-    description: 'Decorations',
-    gradient: 'from-[#1C4D8D] to-[#4988C4]'
   }
 ];
 

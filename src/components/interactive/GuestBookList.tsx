@@ -6,7 +6,7 @@ import Image from "next/image";
 import { MessageCircle, Heart, Calendar, User, Sparkles } from "lucide-react";
 import EnhancedLoading from "../ui/EnhancedLoading";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "../wedding/OrnamentLayer";
 
 interface GuestEntry {
@@ -17,14 +17,13 @@ interface GuestEntry {
 
 interface GuestBookListProps {
   clientSlug: string;
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const GuestBookList = ({ clientSlug, customBackground, templateId }: GuestBookListProps) => {
+const GuestBookList = ({ clientSlug, themeId }: GuestBookListProps) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
-  const backgroundImage = customBackground || theme.images.background;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('guestbook') || theme.images.background;
   const [entries, setEntries] = useState<GuestEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +63,7 @@ const GuestBookList = ({ clientSlug, customBackground, templateId }: GuestBookLi
             fill
             style={{ objectFit: 'cover' }}
             quality={100}
-            unoptimized={customBackground?.startsWith('data:')}
+            unoptimized={backgroundImage?.startsWith('data:')}
           />
         </div>
 
@@ -90,7 +89,7 @@ const GuestBookList = ({ clientSlug, customBackground, templateId }: GuestBookLi
             fill
             style={{ objectFit: 'cover' }}
             quality={100}
-            unoptimized={customBackground?.startsWith('data:')}
+            unoptimized={backgroundImage?.startsWith('data:')}
           />
         </div>
 
@@ -106,7 +105,7 @@ const GuestBookList = ({ clientSlug, customBackground, templateId }: GuestBookLi
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-primary/20 via-primarylight/30 to-darkprimary/20">
+    <div id="guestbook" className="relative overflow-hidden min-h-screen bg-gradient-to-br from-primary/20 via-primarylight/30 to-darkprimary/20">
       {/* Enhanced Background */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -115,7 +114,7 @@ const GuestBookList = ({ clientSlug, customBackground, templateId }: GuestBookLi
           fill
           style={{ objectFit: 'cover' }}
           quality={100}
-          unoptimized={customBackground?.startsWith('data:')}
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
       </div>
 

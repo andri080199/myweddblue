@@ -509,33 +509,91 @@ select.inline-form-input option[value=""] {
    DASHBOARD INVITATION PREVIEW STYLES
    ======================================== */
 
-/* Dashboard mobile-container styling (for edit preview) */
-@media (min-width: 768px) {
-  /* Theme desktop background for dashboard */
-  [class*="theme-"] .theme-desktop-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    z-index: -1;
-  }
+/* ========================================
+   DASHBOARD MOBILE PREVIEW (FIXED)
+   ======================================== */
 
-  /* Mobile container centered in dashboard */
+/* --- TAMPILAN DESKTOP / DASHBOARD --- */
+@media (min-width: 768px) {
+  /* 1. KOTAK HP (FRAME UTAMA) */
   .mobile-container {
-    position: relative;
+    position: relative; /* Menjadi acuan untuk konten di dalamnya */
     z-index: 1;
     max-width: 480px;
+    width: 100%;
     margin: 0 auto;
-    min-height: 100vh;
+    
+    /* PENTING: Kita set tinggi fix. 
+       Gunakan calc(100vh - 40px) agar ada jarak sedikit dari atas/bawah browser 
+       dan scrollbar tidak tertutup layar monitor */
+    height: calc(100vh - 40px); 
+    top: 20px; /* Spacer dari atas */
+    
+    overflow: hidden; /* Sembunyikan apapun yang keluar dari frame HP */
     background: white;
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+    border-radius: 20px; /* Sedikit lengkungan biar mirip HP */
+  }
+
+  /* 2. AREA SCROLL (Wajib dipakai di React) */
+  /* Teknik Absolute Inset: Memaksa konten memenuhi frame HP */
+  .mobile-scroll-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    overflow-y: auto;   /* Scroll terjadi di sini */
+    overflow-x: hidden;
+
+    /* Agar scroll smooth */
+    scroll-behavior: smooth;
+
+    /* Sembunyikan scrollbar tapi tetap bisa scroll */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .mobile-scroll-content::-webkit-scrollbar {
+    display: none;
   }
 }
 
+/* inline-editor.css */
+
+/* --- TAMPILAN MOBILE --- */
 @media (max-width: 767px) {
   .mobile-container {
     width: 100%;
-    min-height: 100vh;
+    
+    /* PERBAIKAN DISINI: */
+    /* Jangan 100%, tapi 100vh dikurangi tinggi Header Dashboard (64px) */
+    height: calc(100vh - 64px); 
+    
+    /* Pastikan posisi top 0 agar nempel di bawah header */
+    margin: 0;
+    top: 0;
+    border-radius: 0;
+    
+    position: relative;
+    overflow: hidden; /* Sembunyikan overflow keluar container */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Area Scroll tetap absolute inset-0 */
+  .mobile-scroll-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    /* Smooth Scroll */
+    -webkit-overflow-scrolling: touch;
   }
 }

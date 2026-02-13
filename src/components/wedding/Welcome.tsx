@@ -5,7 +5,7 @@ import GroomCard from "../cards/GroomCard";
 import Image from "next/image";
 import { extractNamesFromSlug } from "@/utils/extractNamesFromSlug";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "./OrnamentLayer";
 
 interface WelcomeProps {
@@ -23,15 +23,14 @@ interface WelcomeProps {
     weddingImage?: string;
   };
   clientSlug: string;
-  customBackground?: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, customBackground, templateId }) => {
+const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const backgroundImage = customBackground || theme.images.hero;
+  const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
+  const backgroundImage = getBackground('welcome') || theme.images.hero;
   const { groomName, brideName } = extractNamesFromSlug(clientSlug);
-  const { getOrnaments } = useTemplateOrnaments(templateId);
   
   // Typewriter effect state
   const [displayedText, setDisplayedText] = useState("");
@@ -91,7 +90,7 @@ const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, customBackgro
           style={{ objectFit: 'cover' }}
           quality={100}
           className="relative-full z-0"
-          unoptimized={customBackground?.startsWith('data:')}
+          unoptimized={backgroundImage?.startsWith('data:')}
         />
         {/* Optional overlay if needed */}
         {/* <div className="absolute inset-0 bg-darkprimary opacity-10"></div> */}

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import ScrollReveal from "../ui/ScrollReveal";
 import { Heart, Calendar, Star, Sparkles, Users, Gift } from "lucide-react";
 import { useThemeContext } from "@/contexts/ThemeContext";
-import { useTemplateOrnaments } from "@/hooks/useTemplateOrnaments";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 import OrnamentLayer from "./OrnamentLayer";
 
 interface TimelineItem {
@@ -26,14 +26,13 @@ interface TimelineProps {
     story4?: string;
     story4Visible?: boolean;
   };
-  customBackground?: string;
   clientSlug: string;
-  templateId?: number | null;
+  themeId?: string;
 }
 
-const Timeline: React.FC<TimelineProps> = ({ loveStoryData, clientSlug, templateId }) => {
+const Timeline: React.FC<TimelineProps> = ({ loveStoryData, clientSlug, themeId }) => {
   const { theme } = useThemeContext();
-  const { getOrnaments } = useTemplateOrnaments(templateId);
+  const { getOrnaments } = useUnifiedTheme(themeId);
   const timelineRef = useRef<HTMLDivElement>(null);
   const [progressHeight, setProgressHeight] = useState<number>(0);
 
@@ -221,7 +220,7 @@ const Timeline: React.FC<TimelineProps> = ({ loveStoryData, clientSlug, template
       </div>
 
       {/* Ornament Layer - Decorative elements */}
-      <OrnamentLayer ornaments={getOrnaments('timeline')} />
+      <OrnamentLayer ornaments={getOrnaments('love-story')} />
     </div>
   );
 };

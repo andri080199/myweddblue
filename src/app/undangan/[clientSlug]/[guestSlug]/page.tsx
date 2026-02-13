@@ -6,11 +6,10 @@ import Image from "next/image";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { MusicProvider } from "@/contexts/MusicContext";
 import "@/styles/theme-backgrounds.css";
-import { composeThemeAsync } from "@/themes/themeComposer";
 import { sampleCoupleInfo } from "@/data/sampleCouple";
 import { useClientContent } from "@/hooks/useClientContent";
 import { useComponentSettings } from "@/hooks/useComponentSettings";
-import { useSectionBackgrounds } from "@/hooks/useSectionBackgrounds";
+import { useUnifiedTheme } from "@/hooks/useUnifiedTheme";
 
 // Komponen
 import FullScreenImage from "@/components/media/FullScreenImage";
@@ -33,60 +32,37 @@ const Page: React.FC = () => {
   const params = useParams();
   const clientSlug = params?.clientSlug as string;
 
-  // Theme state
-  const [themeConfig, setThemeConfig] = useState<any>(null);
-  const [templateId, setTemplateId] = useState<number | null>(null);
+  // --- STATE BARU: Kontrol Pembukaan Undangan ---
+  const [isInvitationOpened, setIsInvitationOpened] = useState(false);
+
+  // Theme state - UNIFIED SYSTEM
+  const [unifiedThemeId, setUnifiedThemeId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Use theme config (always set after fetch completes)
-  const theme = themeConfig;
+  // Use unified theme hook
+  const { theme: unifiedTheme, loading: themeLoading } = useUnifiedTheme(unifiedThemeId);
 
   // Client content
-  const { content, galleryPhotos, loading: contentLoading } =
-    useClientContent(clientSlug);
+  const { content, galleryPhotos, loading: contentLoading } = useClientContent(clientSlug);
 
   // Component settings
-  const { settings: componentSettings, loading: settingsLoading } =
-    useComponentSettings(clientSlug);
+  const { settings: componentSettings, loading: settingsLoading } = useComponentSettings(clientSlug);
 
-  // Custom section backgrounds
-  const { getBackground } = useSectionBackgrounds(clientSlug);
-
-  // Fetch client data and theme from database
+  // Fetch client data to get unified_theme_id
   useEffect(() => {
     const fetchClientData = async () => {
       try {
-        // Fetch client info to get catalog_template_id
         const clientResponse = await fetch(`/api/clients?slug=${clientSlug}`);
         if (clientResponse.ok) {
           const clientData = await clientResponse.json();
-          setTemplateId(clientData.catalog_template_id || null);
-
-          console.log('📋 Client data loaded:', {
-            slug: clientSlug,
-            templateId: clientData.catalog_template_id
-          });
-        }
-
-        // Fetch theme config
-        const themeResponse = await fetch(
-          `/api/client-theme?clientSlug=${clientSlug}`
-        );
-        if (themeResponse.ok) {
-          const data = await themeResponse.json();
-
-          // Use new composed theme system
-          const colorThemeId = data.colorTheme || 'original';
-          const backgroundThemeId = data.backgroundTheme || 'original';
-
-          const composed = await composeThemeAsync(colorThemeId, backgroundThemeId);
-          setThemeConfig(composed);
+          const themeId = clientData.unified_theme_id || 'original';
+          setUnifiedThemeId(themeId);
+        } else {
+          setUnifiedThemeId('original');
         }
       } catch (error) {
         console.error("Error fetching client data:", error);
-        // Fallback to original theme on error
-        const fallback = await composeThemeAsync('original', 'original');
-        setThemeConfig(fallback);
+        setUnifiedThemeId('original');
       } finally {
         setLoading(false);
       }
@@ -99,13 +75,15 @@ const Page: React.FC = () => {
 
   // Auto-scroll ke fullscreen saat refresh
   useEffect(() => {
-    const fullScreenImage = document.getElementById("fullscreen-image");
-    if (fullScreenImage) {
-      fullScreenImage.scrollIntoView({ behavior: "smooth" });
+    if (isInvitationOpened) {
+        const fullScreenImage = document.getElementById("fullscreen-image");
+        if (fullScreenImage) {
+            fullScreenImage.scrollIntoView({ behavior: "smooth" });
+        }
     }
-  }, []);
+  }, [isInvitationOpened]);
 
-  if (loading || contentLoading || settingsLoading) {
+  if (loading || themeLoading || contentLoading || settingsLoading) {
     return (
       <EnhancedLoading
         message="Memuat undangan pernikahan..."
@@ -115,65 +93,67 @@ const Page: React.FC = () => {
     );
   }
 
-  // Convert number to Indonesian ordinal words
   const getOrdinalWord = (num: string): string => {
     const ordinals: { [key: string]: string } = {
-      "1": "pertama",
-      "2": "kedua",
-      "3": "ketiga",
-      "4": "keempat",
-      "5": "kelima",
-      "6": "keenam",
-      "7": "ketujuh",
-      "8": "kedelapan",
-      "9": "kesembilan",
-      "10": "kesepuluh",
+      "1": "pertama", "2": "kedua", "3": "ketiga", "4": "keempat", "5": "kelima",
+      "6": "keenam", "7": "ketujuh", "8": "kedelapan", "9": "kesembilan", "10": "kesepuluh",
     };
     return ordinals[num] || `ke-${num}`;
   };
 
-  // Merge content with sample data as fallback
   const coupleInfo = {
     ...sampleCoupleInfo,
     bride: {
       ...sampleCoupleInfo.bride,
       name: content.couple_info?.brideName || sampleCoupleInfo.bride.name,
-      fullName:
-        content.couple_info?.brideFullName || sampleCoupleInfo.bride.fullName,
-      parent:
-        content.couple_info?.brideChildOrder &&
-        content.couple_info?.brideFatherName &&
-        content.couple_info?.brideMotherName
+      fullName: content.couple_info?.brideFullName || sampleCoupleInfo.bride.fullName,
+      parent: content.couple_info?.brideChildOrder && content.couple_info?.brideFatherName && content.couple_info?.brideMotherName
           ? `Putri ${getOrdinalWord(content.couple_info.brideChildOrder)} dari Bapak ${content.couple_info.brideFatherName} & Ibu ${content.couple_info.brideMotherName}`
           : sampleCoupleInfo.bride.parent,
     },
     groom: {
       ...sampleCoupleInfo.groom,
       name: content.couple_info?.groomName || sampleCoupleInfo.groom.name,
-      fullName:
-        content.couple_info?.groomFullName || sampleCoupleInfo.groom.fullName,
-      parent:
-        content.couple_info?.groomChildOrder &&
-        content.couple_info?.groomFatherName &&
-        content.couple_info?.groomMotherName
+      fullName: content.couple_info?.groomFullName || sampleCoupleInfo.groom.fullName,
+      parent: content.couple_info?.groomChildOrder && content.couple_info?.groomFatherName && content.couple_info?.groomMotherName
           ? `Putra ${getOrdinalWord(content.couple_info.groomChildOrder)} dari Bapak ${content.couple_info.groomFatherName} & Ibu ${content.couple_info.groomMotherName}`
           : sampleCoupleInfo.groom.parent,
     },
   };
 
-  // Get wedding image for desktop photo panel
-  const desktopPhotoUrl =
-    content.couple_info?.weddingImage || '/images/groom_and_bride.png';
+  const desktopPhotoUrl = content.couple_info?.weddingImage || '/images/groom_and_bride.png';
+
+  const legacyTheme = unifiedTheme ? {
+    id: unifiedTheme.theme_id,
+    name: unifiedTheme.theme_name,
+    description: unifiedTheme.description || '',
+    colors: unifiedTheme.colors,
+    images: {
+      hero: unifiedTheme.backgrounds?.fullscreen || '/images/Wedding1.png',
+      background: unifiedTheme.backgrounds?.welcome || '/images/Wedding2.png',
+      gallery: [],
+      couple: {
+        bride: '/images/groom_and_bride.png',
+        groom: '/images/groom_and_bride.png'
+      }
+    },
+    typography: {
+      primaryFont: 'Merienda, cursive',
+      secondaryFont: 'Poppins, sans-serif',
+      headingFont: 'Lavishly Yours, cursive',
+      scriptFont: 'Great Vibes, cursive'
+    },
+    customStyles: unifiedTheme.custom_styles,
+  } : null;
 
   return (
     <MusicProvider>
-      <ThemeProvider theme={theme} coupleInfo={coupleInfo}>
-        <div
-          className={`theme-${themeConfig?.id?.split('-')[0] || 'original'}`}
-        >
-          {/* Desktop Layout: Split View */}
+      <ThemeProvider theme={legacyTheme} coupleInfo={coupleInfo}>
+        <div className={`theme-${unifiedTheme?.theme_id?.split('-')[0] || 'original'}`}>
+          
           <div className="lg:flex lg:min-h-screen">
-            {/* Left Panel - Photo (Desktop only, 2/3 width) */}
+            
+            {/* Left Panel */}
             <div className="hidden lg:block lg:fixed lg:left-0 lg:top-0 lg:w-2/3 lg:h-screen lg:overflow-hidden">
               <Image
                 src={desktopPhotoUrl}
@@ -182,166 +162,159 @@ const Page: React.FC = () => {
                 priority
                 className="object-cover"
               />
-              {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/30 pointer-events-none" />
             </div>
 
-            {/* Right Panel - Invitation (1/3 width on desktop, full on mobile/tablet) */}
+            {/* Right Panel */}
             <div className="w-full lg:w-1/3 lg:ml-[66.666667%] min-h-screen relative z-10">
-              {/* Tablet Background (hidden on desktop & mobile) */}
+              
               <div className="hidden md:block lg:hidden theme-desktop-bg" />
 
-              {/* Invitation Container */}
+              {/* Container Undangan */}
               <div className="w-full min-h-screen bg-white md:max-w-[480px] md:mx-auto md:shadow-[0_0_50px_rgba(0,0,0,0.1)] lg:max-w-none lg:mx-0 lg:shadow-none">
-                {/* Hero / Intro Section */}
+                
                 {componentSettings.showFullScreenImage && (
-                  <div
-                    id="fullscreen-image"
-                    className="flex items-center justify-center min-h-screen bg-gray-100"
-                  >
+                  <div id="fullscreen-image" className="flex items-center justify-center min-h-screen bg-gray-100 overflow-hidden">
                     <FullScreenImage
-                      src={theme.images.hero}
+                      src={legacyTheme?.images.hero || '/images/Wedding1.png'}
                       alt="Example Full Screen Image"
                       clientSlug={clientSlug}
-                      templateId={templateId}
+                      themeId={unifiedThemeId || undefined}
                       weddingImage={content.couple_info?.weddingImage}
-                      customBackground={getBackground('fullscreen')}
+                      onOpen={() => setIsInvitationOpened(true)} 
                     />
                   </div>
                 )}
 
-                {/* Ayat */}
                 {componentSettings.showKutipanAyat && (
-                  <KutipanAyat
-                    quote={content.kutipan_ayat?.ayat}
-                    source={content.kutipan_ayat?.sumber}
-                    templateId={templateId}
-                    customBackground={getBackground('kutipan')}
-                  />
+                  <div id="kutipan-ayat" className="overflow-hidden">
+                    <KutipanAyat
+                      quote={content.kutipan_ayat?.ayat}
+                      source={content.kutipan_ayat?.sumber}
+                      themeId={unifiedThemeId || undefined}
+                    />
+                  </div>
                 )}
 
-                {/* Welcome Message */}
                 {componentSettings.showWelcome && (
-                  <div id="about">
+                  <div id="about" className="overflow-hidden">
                     <Welcome
                       coupleInfo={content.couple_info}
                       clientSlug={clientSlug}
-                      templateId={templateId}
-                      customBackground={getBackground('welcome')}
+                      themeId={unifiedThemeId || undefined}
                     />
                   </div>
                 )}
 
-                {/* Love Story */}
                 {componentSettings.showLoveStory && (
-                  <div id="lovestory" className="relative h-max bg-primary">
-                    <div>
+                  <div id="love-story" className="relative h-max bg-primary overflow-hidden">
+                    <div className="absolute inset-0">
                       <Image
-                        src={getBackground('timeline') || theme.images.background}
+                        src={unifiedTheme?.backgrounds?.timeline || legacyTheme?.images.background || '/images/Wedding2.png'}
                         alt="Love Story Background"
                         fill
-                        className="relative h-full z-0 object-cover"
+                        className="object-cover"
                       />
                     </div>
-
                     {componentSettings.showTimeline && (
                       <Timeline
                         clientSlug={clientSlug}
-                        templateId={templateId}
+                        themeId={unifiedThemeId || undefined}
                         loveStoryData={content.love_story}
                       />
                     )}
                   </div>
                 )}
 
-                {/* Detail Acara */}
                 {componentSettings.showWeddingEvent && (
-                  <div id="event">
+                  <div id="wedding-event" className="overflow-hidden">
                     <WeddingEvent
                       clientSlug={clientSlug}
-                      templateId={templateId}
+                      themeId={unifiedThemeId || undefined}
                       akadInfo={content.akad_info}
                       resepsiInfo={content.resepsi_info}
-                      customBackground={getBackground('event')}
                     />
                   </div>
                 )}
 
-                {/* Hadiah Pernikahan */}
                 {componentSettings.showWeddingGift && (
-                  <div id="gift">
-                    <WeddingGift
-                      clientSlug={clientSlug}
-                      templateId={templateId}
-                      customBackground={getBackground('gift')}
-                    />
-                  </div>
+                  <WeddingGift
+                    clientSlug={clientSlug}
+                    themeId={unifiedThemeId || undefined}
+                  />
                 )}
 
-                {/* Galeri */}
                 {componentSettings.showGallery && (
-                  <div id="gallery">
-                    <OurGallery
-                      clientSlug={clientSlug}
-                      templateId={templateId}
-                      galleryPhotos={galleryPhotos}
-                      youtubeUrl={content.gallery_video?.youtubeUrl}
-                      customBackground={getBackground('gallery')}
-                    />
-                  </div>
+                  <OurGallery
+                    clientSlug={clientSlug}
+                    themeId={unifiedThemeId || undefined}
+                    galleryPhotos={galleryPhotos}
+                    youtubeUrl={content.gallery_video?.youtubeUrl}
+                  />
                 )}
 
-                {/* RSVP Form */}
                 {componentSettings.showRSVP && (
-                  <div id="rsvp">
+                  <div id="rsvp" className="overflow-hidden">
                     <RSVPForm
                       clientSlug={clientSlug}
-                      templateId={templateId}
-                      customBackground={getBackground('rsvp')}
+                      themeId={unifiedThemeId || undefined}
                     />
                   </div>
                 )}
 
-                {/* Buku Tamu */}
                 {componentSettings.showGuestBook && (
                   <GuestBookList
                     clientSlug={clientSlug}
-                    templateId={templateId}
-                    customBackground={getBackground('guestbook')}
+                    themeId={unifiedThemeId || undefined}
                   />
                 )}
 
-                {/* Thank You Message */}
                 {componentSettings.showFooter && (
                   <ThankYouMessage
                     clientSlug={clientSlug}
-                    templateId={templateId}
-                    customBackground={getBackground('thankyou')}
+                    themeId={unifiedThemeId || undefined}
                   />
                 )}
 
-                {/* Footer */}
                 {componentSettings.showFooter && (
                   <Footer
                     clientSlug={clientSlug}
-                    templateId={templateId}
-                    customBackground={getBackground('footer')}
+                    themeId={unifiedThemeId || undefined}
                   />
                 )}
 
-                {/* Navigasi */}
-                {componentSettings.showNavbar && (
-                  <Navbar componentSettings={componentSettings} />
-                )}
-
-                {/* Musik */}
-                {componentSettings.showMusic && (
-                  <MusicCircle
-                    clientSlug={clientSlug}
-                    weddingImage={content.couple_info?.weddingImage}
-                  />
-                )}
               </div>
+              
+              {/* --- FLOATING ELEMENTS WRAPPER (Navbar & Music) --- */}
+              {/* Kita buat satu wrapper fixed untuk menampung elemen-elemen mengambang */}
+              {/* Logic: 
+                  - Mobile: fixed bottom-0 left-0 w-full 
+                  - Desktop: fixed bottom-0 lg:left-[66.666667%] lg:w-[33.333333%] (Menempel di panel kanan)
+              */}
+              {isInvitationOpened && (
+                  <div className="fixed bottom-0 left-0 w-full lg:left-[66.666667%] lg:w-[33.333333%] z-[100] pointer-events-none flex flex-col items-center">
+                      
+                      {/* 1. MUSIC CIRCLE */}
+                      {componentSettings.showMusic && (
+                          // absolute relative terhadap wrapper fixed ini
+                          // bottom-20 agar di atas navbar, right-4 agar di kanan
+                          <div className="absolute bottom-12 md:bottom-8 right-0 md:right-4 pointer-events-auto">
+                              <MusicCircle
+                                  clientSlug={clientSlug}
+                                  weddingImage={content.couple_info?.weddingImage}
+                              />
+                          </div>
+                      )}
+
+                      {/* 2. NAVBAR */}
+                      {componentSettings.showNavbar && (
+                          <div className="pointer-events-auto relative z-50">
+                              <Navbar componentSettings={componentSettings} />
+                          </div>
+                      )}
+                  </div>
+              )}
+
             </div>
           </div>
         </div>

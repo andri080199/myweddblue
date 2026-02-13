@@ -1,7 +1,6 @@
 'use client';
 import { MouseEvent } from 'react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
 
 interface ComponentSettings {
   showFullScreenImage: boolean;
@@ -28,10 +27,6 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({ componentSettings }) => {
-  const pathname = usePathname();
-  const isDashboard = pathname?.includes('/dashboard');
-  const isUndangan = pathname?.includes('/undangan');
-
   const allSections = [
     {
       name: 'Home',
@@ -49,21 +44,21 @@ const Navbar: React.FC<NavbarProps> = ({ componentSettings }) => {
     },
     {
       name: 'Love Story',
-      id: 'lovestory',
+      id: 'love-story',
       imgSrc: '/icons/love-letter.png',
       imgAlt: 'Love Story Icon',
       settingKey: 'showLoveStory',
     },
     {
       name: 'Wedding Event',
-      id: 'event',
+      id: 'wedding-event',
       imgSrc: '/icons/calendar.png',
       imgAlt: 'Event Icon',
       settingKey: 'showWeddingEvent',
     },
     {
       name: 'Gift',
-      id: 'gift',
+      id: 'wedding-gift',
       imgSrc: '/icons/gift.png',
       imgAlt: 'Gift Icon',
       settingKey: 'showWeddingGift',
@@ -84,35 +79,27 @@ const Navbar: React.FC<NavbarProps> = ({ componentSettings }) => {
     },
   ];
 
-  // Filter sections based on component settings
-  const sections = componentSettings 
+  // Filter sections berdasarkan settings yang aktif
+  const sections = componentSettings
     ? allSections.filter(section => componentSettings[section.settingKey as keyof ComponentSettings])
     : allSections;
 
   const handleScroll = (event: MouseEvent, id: string) => {
-    event.preventDefault(); // Prevent default link behavior
+    event.preventDefault();
     const targetElement = document.getElementById(id);
     if (targetElement) {
-      targetElement.scrollIntoView({ behavior: 'smooth' }); // Smooth scrolling to target
+      targetElement.scrollIntoView({ behavior: 'smooth' });
     }
-  };
-
-  // Tailwind classes for different modes
-  const getNavbarPositionClass = () => {
-    if (isDashboard) {
-      return 'dashboard-navbar';
-    }
-    if (isUndangan) {
-      // Desktop: center within right 1/3 panel (83.33% from left = 66.67% + 16.67%)
-      // Tablet/Mobile: center of screen
-      return 'left-1/2 -translate-x-1/2 lg:left-[83.333333%] lg:-translate-x-1/2';
-    }
-    return 'left-1/2 -translate-x-1/2';
   };
 
   return (
-    <nav className={`fixed bottom-4 w-max z-40 ${getNavbarPositionClass()}`}>
-      {/* Latar belakang transparan */}
+    // PERUBAHAN UTAMA DI SINI:
+    // 1. Menggunakan 'absolute' agar posisinya relatif terhadap parent (.mobile-container)
+    // 2. 'left-1/2 -translate-x-1/2' memastikan elemen tepat di tengah parent secara horizontal
+    // 3. 'bottom-4' memberikan jarak dari bawah parent
+    <nav className="absolute bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 z-50 w-max">
+      
+      {/* Latar belakang transparan dengan opacity */}
       <div className="absolute inset-0 bg-darkprimary opacity-40 rounded-3xl pointer-events-none"></div>
 
       {/* Konten navbar */}
@@ -128,8 +115,8 @@ const Navbar: React.FC<NavbarProps> = ({ componentSettings }) => {
                 <Image
                   src={section.imgSrc}
                   alt={section.imgAlt}
-                  width={16} // Ganti ukuran sesuai kebutuhan
-                  height={16} // Ganti ukuran sesuai kebutuhan
+                  width={16}
+                  height={16}
                 />
               </button>
             </li>
