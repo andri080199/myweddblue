@@ -75,11 +75,14 @@ export default function AdminLayout({
   useEffect(() => {
     const checkAuth = () => {
       try {
-        const authData = localStorage.getItem('admin_auth');
-        if (authData) {
-          const parsed = JSON.parse(authData);
-          if (parsed.isAuthenticated) {
-            setIsAuthenticated(true);
+        // Check if window is defined (client-side only)
+        if (typeof window !== 'undefined') {
+          const authData = localStorage.getItem('admin_auth');
+          if (authData) {
+            const parsed = JSON.parse(authData);
+            if (parsed.isAuthenticated) {
+              setIsAuthenticated(true);
+            }
           }
         }
       } catch (error) {
@@ -118,9 +121,11 @@ export default function AdminLayout({
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_auth');
-    // Use window.location for full page reload to ensure clean state
-    window.location.href = '/admin/login';
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_auth');
+      // Use window.location for full page reload to ensure clean state
+      window.location.href = '/admin/login';
+    }
   };
 
   // Show loading while checking auth
