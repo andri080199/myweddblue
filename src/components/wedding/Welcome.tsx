@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import ScrollReveal from "../ui/ScrollReveal";
 import BrideCard from "../cards/BrideCard";
 import GroomCard from "../cards/GroomCard";
@@ -26,7 +26,7 @@ interface WelcomeProps {
   themeId?: string;
 }
 
-const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, themeId }) => {
+const Welcome = forwardRef<HTMLDivElement, WelcomeProps>(({ coupleInfo, clientSlug, themeId }, ref) => {
   const { theme } = useThemeContext();
   const { getOrnaments, getBackground } = useUnifiedTheme(themeId);
   const backgroundImage = getBackground('welcome') || theme.images.hero;
@@ -79,7 +79,7 @@ const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, themeId }) =>
 
   return (
     // Added overflow-hidden to prevent scrollbars from SVG
-    <div id="about" className="relative w-full px-12 sm:px-6 md:px-8 py-6 bg-primarylight shadow-md text-center z-10 pb-16 overflow-hidden">
+    <div ref={ref} id="about" className="relative w-full px-6 sm:px-6 md:px-8 lg:px-12 py-6 bg-primarylight shadow-md text-center z-10 pb-16 overflow-hidden">
       
       {/* ORIGINAL BACKGROUND IMAGE */}
       <div className="absolute inset-0 z-0">
@@ -142,7 +142,7 @@ const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, themeId }) =>
 
       {/* ORIGINAL CARDS SECTION (Restored exactly as requested) */}
       <ScrollReveal>
-        <div className="relative bg-white bg-opacity-40 backdrop-blur-md rounded-3xl py-8 px-2 mx-2 sm:mx-6 md:mx-10 mb-8 border-2 border-primary shadow-md shadow-darkprimary hover:-translate-y-2 transition-all duration-300">
+        <div className="relative bg-white bg-opacity-40 backdrop-blur-md rounded-3xl py-6 px-2 mb-8 md:mx-10 border-2 border-primary shadow-md shadow-darkprimary hover:-translate-y-2 transition-all duration-300">
           <BrideCard 
             brideName={brideName}
             brideFullName={coupleInfo?.brideFullName}
@@ -155,7 +155,7 @@ const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, themeId }) =>
       </ScrollReveal>
 
       <ScrollReveal>
-        <div className="relative bg-white bg-opacity-40 backdrop-blur-md rounded-3xl py-8 px-2 mx-2 sm:mx-6 md:mx-10 mb-8 border-2 border-primary shadow-md shadow-darkprimary hover:-translate-y-2 transition-all duration-300">
+        <div className="relative bg-white bg-opacity-40 backdrop-blur-md rounded-3xl py-6 px-2 md:mx-10 mb-8 border-2 border-primary shadow-md shadow-darkprimary hover:-translate-y-2 transition-all duration-300">
           <GroomCard
             groomName={groomName}
             groomFullName={coupleInfo?.groomFullName}
@@ -171,6 +171,8 @@ const Welcome: React.FC<WelcomeProps> = ({ coupleInfo, clientSlug, themeId }) =>
       <OrnamentLayer ornaments={getOrnaments('welcome')} />
     </div>
   );
-};
+});
+
+Welcome.displayName = 'Welcome';
 
 export default Welcome;

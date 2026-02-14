@@ -151,6 +151,87 @@ export default function EditableOrnament({
     };
   }, [isRotating, rotation, ornament, onUpdate]);
 
+  // Entrance animation state untuk preview mode
+  const previewRef = useRef<HTMLDivElement>(null);
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+  const [previewAnimationKey, setPreviewAnimationKey] = useState(0);
+
+  // Edit mode animation replay key
+  const [editAnimationKey, setEditAnimationKey] = useState(0);
+  const prevAnimationRef = useRef(ornament.animation);
+  const isFirstMount = useRef(true);
+
+  // Track animation changes in edit mode untuk replay animation
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    // Skip animation on first mount to prevent double animation
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      prevAnimationRef.current = ornament.animation;
+      return;
+    }
+
+    // Check if entrance animation settings changed
+    const prev = prevAnimationRef.current;
+    const curr = ornament.animation;
+
+    if (
+      prev?.entranceEnabled !== curr?.entranceEnabled ||
+      prev?.entrance !== curr?.entrance ||
+      prev?.entranceDuration !== curr?.entranceDuration
+    ) {
+      // Animation settings changed, replay animation
+      setEditAnimationKey(prev => prev + 1);
+    }
+
+    prevAnimationRef.current = curr;
+  }, [isEditMode, ornament.animation?.entranceEnabled, ornament.animation?.entrance, ornament.animation?.entranceDuration]);
+
+  // Preview mode IntersectionObserver
+  const previousPreviewVisibilityRef = useRef(false);
+
+  useEffect(() => {
+    if (isEditMode) return; // Only for preview mode
+
+    const element = previewRef.current;
+    if (!element) return;
+
+    // Only set up observer if entrance animation is enabled
+    if (!ornament.animation?.entranceEnabled || ornament.animation?.entrance === 'none') {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const wasVisible = previousPreviewVisibilityRef.current;
+          const nowVisible = entry.isIntersecting;
+
+          // Only trigger animation when transitioning from not-visible to visible
+          if (!wasVisible && nowVisible) {
+            setIsPreviewVisible(true);
+            setPreviewAnimationKey(prev => prev + 1);
+            previousPreviewVisibilityRef.current = true;
+          } else if (wasVisible && !nowVisible) {
+            setIsPreviewVisible(false);
+            previousPreviewVisibilityRef.current = false;
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [isEditMode, ornament.animation]);
+
   // If not in edit mode, render read-only ornament
   if (!isEditMode) {
     // Layer 1: positioning only
@@ -181,19 +262,32 @@ export default function EditableOrnament({
       transformOrigin: 'center',
     };
 
+    // Loop animation classes
+    const loopAnimationClasses = getAnimationClasses(ornament.animation);
+
+    // Entrance animation class - apply ketika visible
+    const entranceClass = isPreviewVisible && ornament.animation?.entranceEnabled && ornament.animation?.entrance !== 'none'
+      ? `ornament-entrance-${ornament.animation.entrance}`
+      : '';
+
     // Layer 3: animations only
     const animationStyle: React.CSSProperties = {
       width: '100%',
       height: '100%',
       opacity: ornament.style.opacity,
-      ...getAnimationStyle(ornament.animation)
+      ...getAnimationStyle(ornament.animation),
+      // Set entrance animation duration
+      ...(entranceClass && {
+        animationDuration: `${ornament.animation?.entranceDuration || 800}ms`
+      })
     };
 
     return (
-      <div style={positionStyle}>
+      <div ref={previewRef} style={positionStyle}>
         <div style={staticTransformStyle}>
           <div
-            className={getAnimationClasses(ornament.animation)}
+            key={previewAnimationKey}
+            className={`${loopAnimationClasses} ${entranceClass}`.trim()}
             style={animationStyle}
           >
             <Image
@@ -204,6 +298,7 @@ export default function EditableOrnament({
               className="w-full h-full object-contain"
               unoptimized
               draggable={false}
+              key={`${ornament.id}-${ornament.image.substring(0, 50)}`}
             />
           </div>
         </div>
@@ -289,14 +384,25 @@ export default function EditableOrnament({
           transformOrigin: 'center'
         }}
       >
-        {/* Layer 2: Animation only */}
+        {/* Layer 2: Animation only - key changes to replay entrance animation */}
         <div
+          key={editAnimationKey}
           onClick={(e) => {
             e.stopPropagation();
             onSelect();
           }}
-          className={`relative w-full h-full ${getAnimationClasses(ornament.animation)}`}
-          style={getAnimationStyle(ornament.animation)}
+          className={`relative w-full h-full ${getAnimationClasses(ornament.animation)} ${
+            ornament.animation?.entranceEnabled && ornament.animation?.entrance !== 'none'
+              ? `ornament-entrance-${ornament.animation.entrance}`
+              : ''
+          }`.trim()}
+          style={{
+            ...getAnimationStyle(ornament.animation),
+            // Set entrance animation duration
+            ...(ornament.animation?.entranceEnabled && ornament.animation?.entrance !== 'none' && {
+              animationDuration: `${ornament.animation?.entranceDuration || 800}ms`
+            })
+          }}
         >
           <Image
             src={ornament.image}
@@ -306,6 +412,7 @@ export default function EditableOrnament({
             className="w-full h-full object-contain"
             unoptimized
             draggable={false}
+            key={`edit-${ornament.id}-${ornament.image.substring(0, 50)}`}
           />
 
           {isSelected && (

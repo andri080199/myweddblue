@@ -42,9 +42,9 @@ const BrideCard: React.FC<BrideCardProps> = ({
             2. border-2: Membuat titik-titik lebih tebal
             3. border-gold: Membuat warna emas solid (bukan transparan)
         */}
-        <div className="absolute -inset-5 rounded-full border-2 border-dashed border-gold animate-[spin_15s_linear_infinite]"></div>
+        <div className="absolute -inset-2 rounded-full border-2 border-dashed border-gold animate-[spin_15s_linear_infinite] shadow-sm shadow-gold"></div>
         
-        <div className="relative w-40 h-40 lg:w-52 lg:h-52 bg-gray-200 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+        <div className="relative w-40 h-40 lg:w-52 lg:h-52 bg-gray-200 rounded-full overflow-hidden border-2 border-white shadow-2xl">
           <Image
             src={brideImage}
             alt="Bride"
@@ -98,13 +98,13 @@ const BrideCard: React.FC<BrideCardProps> = ({
 
           {/* --- 3. INFO ORANG TUA --- */}
           <div className="relative">
-            <div className="bg-white/50 backdrop-blur-sm border-2 border-darkprimary rounded-full px-8 py-3 shadow-md shadow-darkprimary relative">
+            <div className="bg-white/50 backdrop-blur-sm border border-darkprimary px-6 py-2 shadow-md shadow-darkprimary relative">
                
                {/* Ornamen titik emas */}
                <div className="absolute left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-gold rounded-full"></div>
                <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-gold rounded-full"></div>
 
-               <p className="font-poppins text-xs md:text-sm font-semibold text-darkprimary max-w-[280px] md:max-w-md mx-auto leading-relaxed uppercase tracking-wider">
+               <p className="font-poppins text-xs font-thin text-darkprimary md:max-w-md mx-auto leading-tight uppercase tracking-wider">
                  {brideParent}
                </p>
             </div>

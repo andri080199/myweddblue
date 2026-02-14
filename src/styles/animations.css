@@ -178,3 +178,182 @@
     animation: none;
   }
 }
+
+/* ===================================
+   ENTRANCE ANIMATIONS (Play Once)
+   Triggered on scroll into view
+   =================================== */
+
+/* Fade In */
+@keyframes ornament-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Slide from Left */
+@keyframes ornament-slide-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide from Right */
+@keyframes ornament-slide-right {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide from Top */
+@keyframes ornament-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide from Bottom */
+@keyframes ornament-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Zoom In */
+@keyframes ornament-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Zoom Out (start large) */
+@keyframes ornament-zoom-out {
+  from {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Flip X (horizontal flip) */
+@keyframes ornament-flip-x {
+  from {
+    opacity: 0;
+    transform: perspective(400px) rotateY(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(400px) rotateY(0deg);
+  }
+}
+
+/* Flip Y (vertical flip) */
+@keyframes ornament-flip-y {
+  from {
+    opacity: 0;
+    transform: perspective(400px) rotateX(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(400px) rotateX(0deg);
+  }
+}
+
+/* Entrance Animation Classes - Apply with JavaScript */
+.ornament-entrance-fade-in {
+  animation: ornament-fade-in forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-slide-left {
+  animation: ornament-slide-left forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-slide-right {
+  animation: ornament-slide-right forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-slide-down {
+  animation: ornament-slide-down forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-slide-up {
+  animation: ornament-slide-up forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-zoom-in {
+  animation: ornament-zoom-in forwards;
+  animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Spring */
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-zoom-out {
+  animation: ornament-zoom-out forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-flip-x {
+  animation: ornament-flip-x forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.ornament-entrance-flip-y {
+  animation: ornament-flip-y forwards;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+/* Accessibility: Disable entrance animations too */
+@media (prefers-reduced-motion: reduce) {
+  .ornament-entrance-fade-in,
+  .ornament-entrance-slide-left,
+  .ornament-entrance-slide-right,
+  .ornament-entrance-slide-down,
+  .ornament-entrance-slide-up,
+  .ornament-entrance-zoom-in,
+  .ornament-entrance-zoom-out,
+  .ornament-entrance-flip-x,
+  .ornament-entrance-flip-y {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { OrnamentAnimation, AnimationType, AnimationSpeed, DEFAULT_ANIMATION_VALUES } from '@/types/ornament';
-import { Sparkles, Zap, Clock } from 'lucide-react';
+import { OrnamentAnimation, LoopAnimationType, EntranceAnimationType, AnimationSpeed, DEFAULT_ANIMATION_VALUES } from '@/types/ornament';
+import { Sparkles, Zap, Clock, Play } from 'lucide-react';
 
 interface AnimationControlPanelProps {
   animation: OrnamentAnimation;
@@ -10,7 +10,7 @@ interface AnimationControlPanelProps {
 }
 
 export default function AnimationControlPanel({ animation, onChange }: AnimationControlPanelProps) {
-  const animationTypes: { value: AnimationType; label: string; icon: string }[] = [
+  const loopAnimationTypes: { value: LoopAnimationType; label: string; icon: string }[] = [
     { value: 'none', label: 'Tidak Ada', icon: '⏸️' },
     { value: 'sway', label: 'Goyang (Kiri-Kanan)', icon: '↔️' },
     { value: 'float', label: 'Melayang (Naik-Turun)', icon: '↕️' },
@@ -19,6 +19,19 @@ export default function AnimationControlPanel({ animation, onChange }: Animation
     { value: 'bounce', label: 'Bouncing', icon: '⬆️' },
     { value: 'sway-float', label: 'Goyang + Melayang', icon: '🌸' },
     { value: 'rotate-float', label: 'Putar + Melayang', icon: '🌀' },
+  ];
+
+  const entranceAnimationTypes: { value: EntranceAnimationType; label: string; icon: string }[] = [
+    { value: 'none', label: 'Tidak Ada', icon: '⏸️' },
+    { value: 'fade-in', label: 'Fade In', icon: '✨' },
+    { value: 'slide-left', label: 'Dari Kiri', icon: '→' },
+    { value: 'slide-right', label: 'Dari Kanan', icon: '←' },
+    { value: 'slide-up', label: 'Dari Bawah', icon: '↑' },
+    { value: 'slide-down', label: 'Dari Atas', icon: '↓' },
+    { value: 'zoom-in', label: 'Zoom In', icon: '🔍' },
+    { value: 'zoom-out', label: 'Zoom Out', icon: '🔎' },
+    { value: 'flip-x', label: 'Flip Horizontal', icon: '↔️' },
+    { value: 'flip-y', label: 'Flip Vertikal', icon: '↕️' },
   ];
 
   return (
@@ -43,11 +56,11 @@ export default function AnimationControlPanel({ animation, onChange }: Animation
 
       {animation.enabled && (
         <>
-          {/* Animation Type Grid */}
+          {/* Loop Animation Type Grid */}
           <div>
-            <label className="text-xs font-medium text-gray-600 mb-2 block">Jenis Animasi</label>
+            <label className="text-xs font-medium text-gray-600 mb-2 block">Jenis Animasi Loop (Terus Menerus)</label>
             <div className="grid grid-cols-2 gap-2">
-              {animationTypes.map((type) => (
+              {loopAnimationTypes.map((type) => (
                 <button
                   key={type.value}
                   onClick={() => onChange({ ...animation, type: type.value })}
@@ -136,6 +149,80 @@ export default function AnimationControlPanel({ animation, onChange }: Animation
           </div>
         </>
       )}
+
+      {/* Entrance Animation Section */}
+      <div className="border-t pt-4 mt-4">
+        <div className="flex items-center justify-between mb-4">
+          <label className="text-sm font-medium flex items-center gap-2">
+            <Play className="w-4 h-4 text-green-500" />
+            Animasi Masuk (Sekali)
+          </label>
+          <button
+            onClick={() => onChange({ ...animation, entranceEnabled: !animation.entranceEnabled })}
+            className={`w-12 h-6 rounded-full transition-colors relative ${
+              animation.entranceEnabled ? 'bg-green-500' : 'bg-gray-300'
+            }`}
+          >
+            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+              animation.entranceEnabled ? 'translate-x-7' : 'translate-x-1'
+            }`} />
+          </button>
+        </div>
+
+        {animation.entranceEnabled && (
+          <>
+            {/* Entrance Animation Type Grid */}
+            <div>
+              <label className="text-xs font-medium text-gray-600 mb-2 block">Jenis Animasi Masuk</label>
+              <div className="grid grid-cols-2 gap-2">
+                {entranceAnimationTypes.map((type) => (
+                  <button
+                    key={type.value}
+                    onClick={() => onChange({ ...animation, entrance: type.value })}
+                    className={`px-3 py-2 rounded border text-left transition-all ${
+                      animation.entrance === type.value
+                        ? 'border-green-500 bg-green-50 shadow-sm'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{type.icon}</span>
+                      <span className="text-sm font-medium">{type.label}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Entrance Duration Slider */}
+            <div className="mt-4">
+              <label className="text-xs font-medium text-gray-600 mb-1 flex items-center gap-1 block">
+                <Clock className="w-3 h-3" />
+                Durasi: {animation.entranceDuration || 800}ms
+              </label>
+              <input
+                type="range"
+                min="300"
+                max="2000"
+                step="100"
+                value={animation.entranceDuration || 800}
+                onChange={(e) => onChange({ ...animation, entranceDuration: parseInt(e.target.value) })}
+                className="w-full accent-green-500"
+              />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>Cepat (300ms)</span>
+                <span>Lambat (2s)</span>
+              </div>
+            </div>
+
+            {/* Info Box for Entrance */}
+            <div className="p-3 bg-green-50 border border-green-200 rounded text-xs text-green-800 mt-4">
+              <p className="font-medium">🎬 Animasi Masuk</p>
+              <p className="mt-1">Animasi akan jalan sekali saat ornament terlihat di layar</p>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

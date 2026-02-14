@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { MusicProvider } from '@/contexts/MusicContext';
 import { useUnifiedTheme } from '@/hooks/useUnifiedTheme';
+import { useContainerDimensions } from '@/hooks/useContainerHeight';
 import { Ornament, SectionId, DEFAULT_ANIMATION_VALUES } from '@/types/ornament';
 import { Save, X, Layers, ArrowLeft, Info, LayoutDashboard, MousePointer2, Menu, Sparkles, ChevronDown, Plus } from 'lucide-react';
 import EditableOrnament from '@/components/admin/EditableOrnament';
@@ -41,6 +42,10 @@ export default function PreviewEditPage() {
   const [currentSection, setCurrentSection] = useState<SectionId>('welcome');
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryOrnaments, setLibraryOrnaments] = useState<any[]>([]);
+  const [copiedOrnament, setCopiedOrnament] = useState<Ornament | null>(null);
+
+  // Measure container dimensions for accurate ornament positioning
+  const { ref: welcomeRef, width: welcomeWidth, height: welcomeHeight } = useContainerDimensions();
 
   // --- Sample Data ---
   const sampleCoupleInfo = {
@@ -128,15 +133,75 @@ export default function PreviewEditPage() {
     fetchLibrary();
   }, []);
 
-  // Keyboard event listener for deleting selected ornament
+  // Keyboard shortcuts handler
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Check if Delete or Backspace key is pressed
-      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedOrnamentId) {
-        // Prevent default behavior (like browser back navigation for Backspace)
+      // ESC - Deselect ornament
+      if (event.key === 'Escape' && selectedOrnamentId) {
         event.preventDefault();
-        // Delete the selected ornament
+        setSelectedOrnamentId(null);
+        return;
+      }
+
+      // Delete or Backspace - Delete selected ornament
+      if ((event.key === 'Delete' || event.key === 'Backspace') && selectedOrnamentId) {
+        event.preventDefault();
         handleOrnamentDelete(selectedOrnamentId);
+        return;
+      }
+
+      // Ctrl+C / Cmd+C - Copy selected ornament
+      if ((event.ctrlKey || event.metaKey) && event.key === 'c' && selectedOrnamentId) {
+        event.preventDefault();
+        const ornamentToCopy = localOrnaments.find(o => o.id === selectedOrnamentId);
+        if (ornamentToCopy) {
+          setCopiedOrnament(ornamentToCopy);
+          // Visual feedback
+          const notification = document.createElement('div');
+          notification.textContent = '📋 Ornament copied!';
+          notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 12px 20px; border-radius: 8px; z-index: 9999; font-weight: 500; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+          document.body.appendChild(notification);
+          setTimeout(() => notification.remove(), 2000);
+        }
+        return;
+      }
+
+      // Ctrl+V / Cmd+V - Paste copied ornament
+      if ((event.ctrlKey || event.metaKey) && event.key === 'v' && copiedOrnament) {
+        event.preventDefault();
+        // Create new ornament with offset position
+        const newOrnament: Ornament = {
+          ...copiedOrnament,
+          id: `ornament-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          position: {
+            ...copiedOrnament.position,
+            // Offset by 5% to make it visible
+            top: copiedOrnament.position.top
+              ? `${Math.min(parseFloat(copiedOrnament.position.top) + 5, 90)}%`
+              : copiedOrnament.position.top,
+            left: copiedOrnament.position.left
+              ? `${Math.min(parseFloat(copiedOrnament.position.left) + 5, 90)}%`
+              : copiedOrnament.position.left,
+            bottom: copiedOrnament.position.bottom
+              ? `${Math.min(parseFloat(copiedOrnament.position.bottom) + 5, 90)}%`
+              : copiedOrnament.position.bottom,
+            right: copiedOrnament.position.right
+              ? `${Math.min(parseFloat(copiedOrnament.position.right) + 5, 90)}%`
+              : copiedOrnament.position.right,
+          },
+          createdAt: new Date().toISOString()
+        };
+
+        setLocalOrnaments(prev => [...prev, newOrnament]);
+        setSelectedOrnamentId(newOrnament.id);
+
+        // Visual feedback
+        const notification = document.createElement('div');
+        notification.textContent = '✅ Ornament pasted!';
+        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #3b82f6; color: white; padding: 12px 20px; border-radius: 8px; z-index: 9999; font-weight: 500; box-shadow: 0 4px 6px rgba(0,0,0,0.1);';
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 2000);
+        return;
       }
     };
 
@@ -147,7 +212,7 @@ export default function PreviewEditPage() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [selectedOrnamentId]); // Re-run when selectedOrnamentId changes
+  }, [selectedOrnamentId, localOrnaments, copiedOrnament]); // Dependencies
 
   async function fetchLibrary() {
     try {
@@ -339,6 +404,46 @@ export default function PreviewEditPage() {
                                 </p>
                             </div>
 
+                            {/* Style Controls */}
+                            <div className="bg-white p-4 rounded-lg border border-gray-200">
+                                <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                                    <Layers className="w-4 h-4 text-blue-500" />
+                                    Pengaturan Tampilan
+                                </h3>
+
+                                {/* Z-Index Control */}
+                                <div>
+                                    <label className="text-xs font-medium text-gray-600 mb-1 block">
+                                        Layer (Z-Index): {localOrnaments.find(o => o.id === selectedOrnamentId)?.style.zIndex || 15}
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="5"
+                                        max="30"
+                                        step="1"
+                                        value={localOrnaments.find(o => o.id === selectedOrnamentId)?.style.zIndex || 15}
+                                        onChange={(e) => {
+                                            const ornament = localOrnaments.find(o => o.id === selectedOrnamentId);
+                                            if (ornament) {
+                                                handleOrnamentUpdate({
+                                                    ...ornament,
+                                                    style: {
+                                                        ...ornament.style,
+                                                        zIndex: parseInt(e.target.value)
+                                                    }
+                                                });
+                                            }
+                                        }}
+                                        className="w-full accent-blue-500"
+                                    />
+                                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                                        <span>Belakang (5)</span>
+                                        <span>Depan (30)</span>
+                                    </div>
+                                    <p className="mt-1 text-xs text-gray-500">Mengontrol urutan layer ornament</p>
+                                </div>
+                            </div>
+
                             {/* Animation Controls */}
                             <div>
                                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -379,6 +484,54 @@ export default function PreviewEditPage() {
                                     <li><strong>Geser</strong> untuk memindahkan.</li>
                                 </ul>
                             </div>
+
+                            {/* Ornament List */}
+                            {localOrnaments.length > 0 && (
+                                <div className="bg-white p-4 rounded-xl border border-gray-200">
+                                    <h3 className="text-sm font-semibold mb-3 text-gray-800">
+                                        Semua Ornament ({localOrnaments.length})
+                                    </h3>
+                                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                                        {localOrnaments.map((ornament) => (
+                                            <div
+                                                key={ornament.id}
+                                                className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-pointer ${
+                                                    selectedOrnamentId === ornament.id
+                                                        ? 'bg-blue-50 border-blue-300'
+                                                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                                }`}
+                                                onClick={() => setSelectedOrnamentId(ornament.id)}
+                                            >
+                                                <img
+                                                    src={ornament.image}
+                                                    alt={ornament.name}
+                                                    className="w-8 h-8 object-contain rounded"
+                                                />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-medium text-gray-800 truncate">
+                                                        {ornament.name}
+                                                    </p>
+                                                    <p className="text-[10px] text-gray-500">
+                                                        {ornament.section} • z:{ornament.style.zIndex}
+                                                    </p>
+                                                </div>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        if (confirm(`Delete "${ornament.name}"?`)) {
+                                                            handleOrnamentDelete(ornament.id);
+                                                        }
+                                                    }}
+                                                    className="p-1.5 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                                                    title="Delete ornament"
+                                                >
+                                                    <X className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <button
                                 onClick={() => setShowLibrary(!showLibrary)}
@@ -639,6 +792,7 @@ export default function PreviewEditPage() {
                         {/* 3. Welcome Section */}
                         <div id="welcome" className="relative overflow-hidden">
                             <Welcome
+                                ref={welcomeRef}
                                 coupleInfo={sampleContent.couple_info}
                                 clientSlug="preview"
                                 themeId={themeId}
@@ -649,8 +803,8 @@ export default function PreviewEditPage() {
                                     ornament={ornament}
                                     isEditMode={true}
                                     isSelected={selectedOrnamentId === ornament.id}
-                                    containerWidth={480}
-                                    containerHeight={800}
+                                    containerWidth={welcomeWidth || 480}
+                                    containerHeight={welcomeHeight || 800}
                                     onSelect={() => setSelectedOrnamentId(ornament.id)}
                                     onUpdate={handleOrnamentUpdate}
                                     onDelete={() => handleOrnamentDelete(ornament.id)}

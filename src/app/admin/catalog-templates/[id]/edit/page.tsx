@@ -161,8 +161,8 @@ export default function EditTemplatePage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      showNotification('error', 'Ukuran gambar maksimal 5MB.');
+    if (file.size > 15 * 1024 * 1024) {
+      showNotification('error', 'Ukuran gambar maksimal 15MB.');
       return;
     }
 

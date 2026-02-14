@@ -25,9 +25,9 @@ export interface OrnamentStyle {
 }
 
 /**
- * Animation types for ornament movements
+ * Loop animation types - continuous animations
  */
-export type AnimationType =
+export type LoopAnimationType =
   | 'none'           // No animation
   | 'sway'           // Horizontal sway (left-right)
   | 'float'          // Vertical float (up-down)
@@ -38,6 +38,21 @@ export type AnimationType =
   | 'rotate-float';  // Combined rotation + vertical float
 
 /**
+ * Entrance animation types - play once on scroll into view
+ */
+export type EntranceAnimationType =
+  | 'none'           // No entrance animation
+  | 'fade-in'        // Fade in from transparent
+  | 'slide-left'     // Slide from left to position
+  | 'slide-right'    // Slide from right to position
+  | 'slide-up'       // Slide from bottom to position
+  | 'slide-down'     // Slide from top to position
+  | 'zoom-in'        // Zoom in from small
+  | 'zoom-out'       // Zoom in from large
+  | 'flip-x'         // Flip horizontally while fading in
+  | 'flip-y';        // Flip vertically while fading in
+
+/**
  * Animation speed presets
  */
 export type AnimationSpeed = 'slow' | 'normal' | 'fast';
@@ -46,11 +61,17 @@ export type AnimationSpeed = 'slow' | 'normal' | 'fast';
  * Animation configuration for ornaments
  */
 export interface OrnamentAnimation {
-  type: AnimationType;              // Animation type
-  enabled: boolean;                 // Enable/disable toggle
-  speed: AnimationSpeed;            // Speed of animation
+  // Loop animation (continuous)
+  type: LoopAnimationType;          // Loop animation type
+  enabled: boolean;                 // Enable/disable loop animation
+  speed: AnimationSpeed;            // Speed of loop animation
   intensity: number;                // Amplitude/range (0.1 to 1.0)
-  delay: number;                    // Animation delay in seconds (0-5)
+  delay: number;                    // Loop animation delay in seconds (0-5)
+
+  // Entrance animation (play once on scroll)
+  entrance?: EntranceAnimationType; // Entrance animation type
+  entranceEnabled?: boolean;        // Enable/disable entrance animation
+  entranceDuration?: number;        // Entrance duration in ms (300-2000)
 }
 
 export interface Ornament {
@@ -172,5 +193,8 @@ export const DEFAULT_ANIMATION_VALUES: OrnamentAnimation = {
   enabled: false,
   speed: 'normal',
   intensity: 0.5,
-  delay: 0
+  delay: 0,
+  entrance: 'none',
+  entranceEnabled: false,
+  entranceDuration: 800
 };

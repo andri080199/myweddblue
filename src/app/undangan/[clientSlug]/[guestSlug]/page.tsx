@@ -144,7 +144,28 @@ const Page: React.FC = () => {
       scriptFont: 'Great Vibes, cursive'
     },
     customStyles: unifiedTheme.custom_styles,
-  } : null;
+  } : {
+    id: 'original',
+    name: 'Original',
+    description: 'Default theme',
+    colors: {},
+    images: {
+      hero: '/images/Wedding1.png',
+      background: '/images/Wedding2.png',
+      gallery: [],
+      couple: {
+        bride: '/images/groom_and_bride.png',
+        groom: '/images/groom_and_bride.png'
+      }
+    },
+    typography: {
+      primaryFont: 'Merienda, cursive',
+      secondaryFont: 'Poppins, sans-serif',
+      headingFont: 'Lavishly Yours, cursive',
+      scriptFont: 'Great Vibes, cursive'
+    },
+    customStyles: {},
+  };
 
   return (
     <MusicProvider>

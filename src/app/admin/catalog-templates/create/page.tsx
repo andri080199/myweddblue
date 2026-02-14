@@ -127,8 +127,8 @@ export default function CreateTemplatePage() {
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      showNotification('error', 'Ukuran gambar maksimal 5MB');
+    if (file.size > 15 * 1024 * 1024) {
+      showNotification('error', 'Ukuran gambar maksimal 15MB');
       return;
     }
 
@@ -272,7 +272,7 @@ export default function CreateTemplatePage() {
                       <Plus className="w-8 h-8 text-slate-400 group-hover:text-[#1C4D8D]" />
                     </div>
                     <p className="text-sm font-bold text-[#0F2854] mb-1">Upload Gambar</p>
-                    <p className="text-xs text-slate-500 text-center px-4">PNG, JPG, Max 5MB<br/>Rasio 3:4 Recommended</p>
+                    <p className="text-xs text-slate-500 text-center px-4">PNG, JPG, Max 15MB<br/>Rasio 3:4 Recommended</p>
                     <input type="file" className="hidden" accept="image/*" onChange={handleImageChange} />
                   </label>
                 )}
